@@ -1,177 +1,217 @@
-# Fi Money Inventory Application
+# Inventory Control Hub
 
-This is a full-stack inventory management application with a Node.js/Express backend and a React frontend.
+A modern, comprehensive system for managing product inventory, built with a robust Node.js (Express) backend, a dynamic React frontend, and a reliable PostgreSQL database.
 
-## Features
+## Core System Capabilities
 
-- User registration and login (JWT-based)
-- CRUD for products (with image, description, quantity, price, etc.)
-- Input validation and consistent error handling
-- Swagger/OpenAPI documentation for backend API
-- Environment-based config with `.env` and `.env.example`
-- **Modern and minimalistic UI for enhanced user experience**
-- **Basic product analytics: Tracks and displays most added products (data stored in PostgreSQL)**
+- **User Authentication:** Secure JWT-based access control with bcrypt for password hashing.
+- **Product Lifecycle Management:** Full CRUD operations for all inventory items, including stock tracking.
+- **Analytics Overview:** Basic insights into product popularity by tracking additions, data persistently stored in PostgreSQL.
+- **Intuitive User Interface:** A contemporary and user-friendly design focused on clarity and ease of navigation.
+- **API Guide:** Comprehensive OpenAPI/Swagger documentation detailing all backend endpoints.
+- **Secure Configuration:** Sensitive environment variables managed safely.
 
-## Requirements
+## Technology Stack
 
-- Node.js (v16+ recommended)
-- PostgreSQL database
+- **Client-Side:** React.js (JavaScript, CSS)
+- **Server-Side:** Node.js, Express.js
+- **Database Engine:** PostgreSQL
+- **Security & Identity:** JWT, bcrypt
+- **Package Management:** npm
 
-## Setup
+## Prerequisites Checklist
 
-### Backend Setup
+Before launching the application, please ensure you have:
 
-1.  **Navigate to the `backend` directory:**
-    ```sh
+- Node.js (version 16+ strongly advised)
+- An operational PostgreSQL database instance
+- Git for repository cloning
+
+## Installation & Setup Guide
+
+### 1. Obtain the Source Code
+
+```bash
+git clone <repository-url>
+cd "Fi Money" # Move into the project root
+```
+
+### 2. Backend Environment Configuration
+
+1.  **Change directory:**
+    ```bash
     cd backend
     ```
-2.  **Install dependencies:**
-    ```sh
+2.  **Install server dependencies:**
+    ```bash
     npm install
     ```
-3.  **Configure environment variables:**
-    - Copy `.env.example` to `.env` in the `backend/` directory and fill in your real credentials.
-    - Example:
-      ```env
-      DATABASE_URL=postgresql://<username>:<password>@<host>:<port>/<database>?sslmode=require
-      JWT_SECRET=your_jwt_secret
-      PORT=8080
-      ```
-4.  **Initialize the database:**
-    - **Important:** This step will drop existing tables and recreate them. Ensure you have backed up any important data if this is not a fresh setup.
-    ```sh
+3.  **Set up Environment Variables:**
+    Create a `.env` file in the `backend/` directory (you can copy `.env.example`).
+    ```env
+    DATABASE_URL=postgresql://<username>:<password>@<host>:<port>/<database>?sslmode=require
+    JWT_SECRET=your_super_secure_jwt_secret_key
+    PORT=8080
+    ```
+    _Important:_ Replace `DATABASE_URL` with your specific PostgreSQL connection string. Ensure `JWT_SECRET` is a strong, unique value.
+4.  **Initialize Database Schema:**
+    **Warning:** This operation will clear and re-create your `users` and `products` tables. Backup any crucial data if this isn't a fresh setup.
+    ```bash
     npm run init-db
     ```
-    This will create the necessary `users` and `products` tables, including the `times_added` column for product analytics.
-5.  **Start the backend server:**
-    ```sh
+    This action ensures the `products` table includes the `times_added` column for analytics.
+5.  **Start the Backend Service:**
+    ```bash
     npm start
-    # or
+    # Alternatively:
     node src/app.js
     ```
-    The backend server will typically run on `http://localhost:8080`.
+    The backend API will become available at `http://localhost:8080`.
 
-### Frontend Setup
+### 3. Frontend Environment Configuration
 
-1.  **Navigate to the `frontend` directory:**
-    ```sh
+1.  **Change directory:**
+    (From the project root, navigate back into `frontend`)
+    ```bash
     cd frontend
     ```
-2.  **Install dependencies:**
-    ```sh
+2.  **Install client dependencies:**
+    ```bash
     npm install
     ```
-3.  **Start the frontend development server:**
-    ```sh
+3.  **Launch Frontend Server:**
+    ```bash
     npm start
     ```
-    The frontend application will typically open in your browser at `http://localhost:3000`.
+    The React application should open in your browser, usually at `http://localhost:3000`.
 
-## Assumptions
+---
 
-- It is assumed that a PostgreSQL database instance is available and accessible with the provided `DATABASE_URL`.
-- The application runs on `http://localhost:8080` for the backend and `http://localhost:3000` for the frontend. Adjust proxy settings in `frontend/package.json` if your backend runs on a different port.
-- Basic validation is implemented, but comprehensive error handling and edge-case management for all API interactions might require further refinement.
-- The `times_added` analytic tracks product additions but does not account for edits or deletions in the current implementation.
+## Database Schema Overview
 
-## API Documentation
+Our application is structured around these key PostgreSQL tables:
 
-- Swagger UI is available at: [http://localhost:8080/api-docs](http://localhost:8080/api-docs)
-- See `backend/swagger.yaml` for the OpenAPI spec.
+### Users (Authentication)
 
-## Example API Requests
+- `id` (Primary Key, Auto-increment)
+- `username` (Unique, Not Null)
+- `password_hash` (Stores bcrypt hashed passwords, Not Null)
 
-### Register
+### Products (Inventory Items)
 
-```sh
-curl -X POST http://localhost:8080/register \
-  -H "Content-Type: application/json" \
-  -d '{"username": "testuser", "password": "testpass"}'
+- `id` (Primary Key, Auto-increment)
+- `name` (Not Null)
+- `type` (Not Null)
+- `sku` (Unique identifier, Not Null)
+- `image_url` (Optional)
+- `description` (Optional)
+- `quantity` (Integer, Not Null)
+- `price` (Numeric(10,2), Not Null)
+- `times_added` (Integer, Default 0; for analytics on product additions)
+
+---
+
+## Available Commands
+
+These commands are executed from within their respective `backend/` or `frontend/` directories.
+
+| Command           | Location    | Purpose                                       |
+| :---------------- | :---------- | :-------------------------------------------- |
+| `npm install`     | `backend/`  | Installs server-side project dependencies     |
+| `npm start`       | `backend/`  | Initiates the Node.js API server              |
+| `npm run init-db` | `backend/`  | Initializes or resets the PostgreSQL database |
+| `npm install`     | `frontend/` | Installs client-side project dependencies     |
+| `npm start`       | `frontend/` | Launches the React development server         |
+
+---
+
+## API Endpoint Reference
+
+All API services are available at `http://localhost:8080`. For comprehensive details on request/response formats, parameters, and authentication, please consult the `API_DOCUMENTATION.md` file.
+
+### Identity & Security Endpoints
+
+- **POST** `/register` - New user account creation
+- **POST** `/login` - User authentication and JWT issuance
+
+### Inventory Operations Endpoints
+
+- **POST** `/products` - Add a new product (or increment count if SKU exists)
+- **GET** `/products` - Retrieve list of products (with pagination)
+- **PUT** `/products/{id}/quantity` - Update specific product quantity
+- **DELETE** `/products/{id}` - Remove a product
+
+### Analytics & Data Insights
+
+- **GET** `/products/analytics/most-added` - Fetch data on most frequently added products
+
+---
+
+## Authentication Process Details
+
+1.  **Account Creation:** Users register via the `/register` endpoint.
+2.  **Token Acquisition:** A successful login (`POST` to `/login`) provides a JWT, crucial for authenticated requests.
+3.  **Authorized Requests:** This JWT must be included in the `Authorization` header (`Bearer <token>`) for all protected API calls.
+4.  **Token Validity:** JWTs are valid for 24 hours; re-login is necessary upon expiration.
+
+---
+
+## Project Directory Structure
+
+```
+Fi Money/
+├── backend/                 # Node.js/Express API (server-side logic)
+│   ├── db_init.sql          # Database schema definition
+│   ├── init-db.js           # Script for database setup
+│   ├── src/                 # Backend application source code
+│   │   ├── app.js           # Main Express application
+│   │   ├── controllers/     # API request handlers
+│   │   ├── middleware/      # Authentication & other middleware
+│   │   ├── models/          # Database interaction layer
+│   │   ├── routes/          # API endpoint routing
+│   │   └── utils/           # General utility functions
+│   └── swagger.yaml         # OpenAPI specification file
+├── frontend/                # React Application (client-side UI)
+│   ├── public/              # Static web assets
+│   ├── src/                 # Frontend source code
+│   │   ├── App.js           # Primary application component & routing
+│   │   ├── App.css          # Global and component styling
+│   │   ├── Login.js         # User login interface
+│   │   ├── Register.js      # User registration interface
+│   │   └── ProductList.js   # Product display and management UI
+│   └── package.json         # Frontend dependencies & scripts
+├── README.md                # Comprehensive project documentation (this file)
+├── API_DOCUMENTATION.md     # Detailed API endpoint reference
+└── package.json             # Root-level package manager config (if applicable)
 ```
 
-### Login
+---
 
-```sh
-curl -X POST http://localhost:8080/login \
-  -H "Content-Type: application/json" \
-  -d '{"username": "testuser", "password": "testpass"}'
-```
+## Security Implementation
 
-### Add Product
+- **Password Safeguarding:** User passwords are encrypted using bcrypt before being stored, significantly enhancing security.
+- **JWT Access Control:** Critical API routes are meticulously protected with JWTs, ensuring only validated and authorized users can interact with them.
+- **Input Integrity Validation:** A robust validation system actively scrutinizes all incoming data for API requests, preventing malformed inputs and thwarting potential injection vulnerabilities.
+- **Environmental Isolation:** Sensitive configuration data, such as database credentials and cryptographic keys, are strictly segregated via environment variables, eliminating their exposure in the source code.
 
-```sh
-curl -X POST http://localhost:8080/products \
-  -H "Authorization: Bearer <JWT_TOKEN>" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "Sample Product",
-    "type": "Electronics",
-    "sku": "SKU123",
-    "quantity": 10,
-    "price": 99.99,
-    "image_url": "",
-    "description": ""
-  }'
-```
+---
 
-### List Products
+## Future Enhancements & Expansion Ideas
 
-```sh
-curl -X GET http://localhost:8080/products \
-  -H "Authorization: Bearer <JWT_TOKEN>"
-```
+Potential areas for evolving this project include:
 
-### Get Most Added Products (Analytics)
+- **Advanced Reporting Modules:** Developing more sophisticated analytics, such as identifying least-performing products, revenue breakdown by product type, or trend analysis for sales over time.
+- **Role-Based Access Control (RBAC):** Implementing distinct user roles with fine-grained permissions (e.g., read-only users, inventory managers, administrators).
+- **Dynamic Search & Filtering:** Introducing powerful search capabilities and flexible filtering options for the product catalog to enhance data discovery and user experience.
+- **Optimized Product Listing:** Implementing server-side pagination for the product display to ensure efficient handling and faster loading times for very large datasets.
+- **Integrated Image Uploads:** Developing functionality for direct image uploads to a cloud storage service (e.g., AWS S3, Cloudinary), moving beyond URL-based inputs.
+- **Real-time Interactions:** Leveraging WebSocket technology to enable instant updates across all connected client applications for inventory changes or new product additions.
+- **Thorough Testing Suites:** Expanding comprehensive unit, integration, and end-to-end tests for both frontend and backend to guarantee high reliability, stability, and bug prevention.
+- **Centralized Logging & Monitoring:** Establishing a robust logging infrastructure to monitor application behavior, track errors, and streamline debugging in production environments.
+- **Advanced Frontend State Management:** For growing application complexity, consider adopting a dedicated state management library (e.g., Redux, Zustand) for more predictable and maintainable frontend state.
 
-```sh
-curl -X GET http://localhost:8080/products/analytics/most-added \
-  -H "Authorization: Bearer <JWT_TOKEN>"
-```
+---
 
-### Update Product Quantity
-
-```sh
-curl -X PUT http://localhost:8080/products/1/quantity \
-  -H "Authorization: Bearer <JWT_TOKEN>" \
-  -H "Content-Type: application/json" \
-  -d '{"quantity": 20}'
-```
-
-### Delete Product
-
-```sh
-curl -X DELETE http://localhost:8080/products/1 \
-  -H "Authorization: Bearer <JWT_TOKEN>"
-```
-
-## Test Server API
-
-- To run the server with a test config, create a `.env.test` file (see `.env.example`).
-- Start the test server with:
-  ```sh
-  NODE_ENV=test node src/app.js
-  # or (if you add a script)
-  npm run test-server
-  ```
-
-## Development
-
-- All secrets/config are managed via environment variables.
-- All endpoints have input validation and consistent error responses.
-- Contributions welcome!
-
-## Stretch Work (Future Enhancements)
-
-- **Advanced Analytics**: Implement more sophisticated analytics, such as least sold products, revenue by product type, or daily sales trends.
-- **User Roles and Permissions**: Introduce different user roles (e.g., admin, standard user) with varying levels of access and permissions to product management.
-- **Search and Filtering**: Add robust search and filtering capabilities to the product list for easier navigation and data retrieval.
-- **Pagination on Product List**: Implement server-side pagination for the product list to efficiently handle large datasets.
-- **Image Uploads**: Integrate a file storage service (e.g., AWS S3, Cloudinary) for direct image uploads instead of just URL input.
-- **Real-time Updates**: Use WebSockets to provide real-time updates for product quantity changes or new product additions across multiple connected clients.
-- **Comprehensive Testing**: Expand unit, integration, and end-to-end tests for both frontend and backend to ensure robustness and stability.
-- **Error Logging**: Implement a centralized error logging system to monitor and debug issues in production environments.
-- **Frontend State Management**: For larger applications, consider using a dedicated state management library like Redux or Zustand for more complex state handling.
-
-## License
+## Licensing Information
 
 MIT
