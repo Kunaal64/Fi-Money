@@ -1,88 +1,75 @@
-# API Documentation - Fi Money Inventory Application
+# Fi Money Inventory API Reference
 
-## Overview
+## Introduction
 
-This document provides comprehensive documentation for the Fi Money Inventory Management API. The API offers endpoints for user authentication, product management (CRUD operations), and basic analytics. All authenticated endpoints utilize JWT (JSON Web Token) based authentication.
+Welcome to the Fi Money Inventory API! This document serves as a complete reference for integrating with our robust backend. The API facilitates secure user authentication, comprehensive product management, and insightful analytics. All protected routes rely on JSON Web Token (JWT) based authentication.
 
-## Base URL
+## API Endpoint Base URL
 
-```
-http://localhost:8080
-```
-
-## Authentication
-
-Most endpoints require authentication via JWT tokens. Include the token in the `Authorization` header as follows:
-
-```
-Authorization: Bearer <your-jwt-token>
-```
-
-### Authentication Flow
-
-1.  **Register**: Create a new user account by sending a `POST` request to `/register`.
-2.  **Login**: Authenticate with your username and password by sending a `POST` request to `/login` to receive a JWT token.
-3.  **Use Token**: Include the received JWT token in the `Authorization` header of all subsequent authenticated API calls.
+All requests should be sent to:
+`http://localhost:8080`
 
 ---
 
-## Endpoints
+## Authentication & Authorization
 
-### Authentication Endpoints
+Access to most API resources requires a valid JWT. Please include your token in the `Authorization` header for all protected endpoints:
 
-#### 1. User Registration
+`Authorization: Bearer <your-json-web-token>`
 
-**POST** `/register`
+### Authentication Flow (Quick Guide)
 
-Registers a new user account in the system.
-
-**Authentication Required**: No
-
-**Request Body**:
-
-```json
-{
-  "username": "string",
-  "password": "string"
-}
-```
-
-**Request Body Parameters**:
-
-- `username` (string, required): A unique username for the new account.
-- `password` (string, required): The password for the new account.
-
-**Success Response** (201 Created):
-
-```json
-{
-  "product_id": 1, // Example product_id if the API returns it, or other success message
-  "message": "User created"
-}
-```
-
-**Error Responses**:
-
-- **400 Bad Request**: If validation fails (e.g., missing username or password).
-  ```json
-  {
-    "error": "Username is required"
-  }
-  ```
-- **409 Conflict**: If the username already exists.
-  ```json
-  {
-    "error": "User already exists"
-  }
-  ```
+1.  **Register:** Create your user account via the `/register` endpoint.
+2.  **Login:** Authenticate with your credentials at `/login` to obtain your unique JWT.
+3.  **Secure Access:** Use this token for all subsequent API calls requiring authentication.
 
 ---
 
-#### 2. User Login
+## Data Models
+
+Understanding our data structures will help you interact with the API effectively.
+
+### User Object
+
+Represents a user account within the system.
+
+```json
+{
+  "id": "number", // Unique identifier for the user
+  "username": "string", // User's chosen username
+  "password_hash": "string" // Hashed representation of the user's password (server-side)
+}
+```
+
+### Product Object
+
+Defines an item available in the inventory.
+
+```json
+{
+  "id": "number", // Unique identifier for the product
+  "name": "string", // Display name of the product
+  "type": "string", // Category or classification of the product
+  "sku": "string", // Stock Keeping Unit (unique product code)
+  "image_url": "string", // URL to the product's image (can be null)
+  "description": "string", // Detailed description of the product (can be null)
+  "quantity": "integer", // Current stock quantity (non-negative)
+  "price": "number", // Unit price of the product
+  "times_added": "integer" // Count of how many times this product has been added (for analytics)
+}
+```
+
+---
+
+## API Endpoints
+
+### User Authentication
+
+#### 1. Login
 
 **POST** `/login`
 
-Authenticates an existing user and returns an access token (JWT).
+Authenticates a user and issues a new JWT.
 
 **Authentication Required**: No
 
@@ -95,12 +82,13 @@ Authenticates an existing user and returns an access token (JWT).
 }
 ```
 
-**Request Body Parameters**:
+**Parameters**:
 
 - `username` (string, required): The user's registered username.
 - `password` (string, required): The user's password.
 
 **Success Response** (200 OK):
+Returns the access token.
 
 ```json
 {
@@ -110,30 +98,109 @@ Authenticates an existing user and returns an access token (JWT).
 
 **Error Responses**:
 
-- **400 Bad Request**: If validation fails (e.g., missing username or password).
+- **400 Bad Request**: Missing required credentials.
   ```json
-  {
-    "error": "Username is required"
-  }
+  { "error": "Username is required" }
   ```
-- **401 Unauthorized**: If credentials are invalid.
+- **401 Unauthorized**: Invalid username or password.
   ```json
-  {
-    "error": "Invalid credentials"
-  }
+  { "error": "Invalid credentials" }
   ```
 
 ---
 
-### Product Management Endpoints
+#### 2. Register User
 
-#### 3. Add a New Product
+**POST** `/register`
+
+Creates a new user account.
+
+**Authentication Required**: No
+
+**Request Body**:
+
+```json
+{
+  "username": "string",
+  "password": "string"
+}
+```
+
+**Parameters**:
+
+- `username` (string, required): A unique username for the new account.
+- `password` (string, required): The password for the new account.
+
+**Success Response** (201 Created):
+Indicates successful user creation.
+
+```json
+{
+  "product_id": 1, // Example ID if returned, or similar success confirmation
+  "message": "User created"
+}
+```
+
+**Error Responses**:
+
+- **400 Bad Request**: Validation failure (e.g., missing fields).
+  ```json
+  { "error": "Username is required" }
+  ```
+- **409 Conflict**: Username already taken.
+  ```json
+  { "error": "User already exists" }
+  ```
+
+---
+
+### Inventory Management
+
+#### 3. Retrieve All Products (Paginated)
+
+**GET** `/products`
+
+Fetches a list of all products in the inventory, supporting pagination.
+
+**Authentication Required**: Yes
+
+**Query Parameters**:
+
+- `limit` (integer, optional): Max number of results per page (default: 10).
+- `offset` (integer, optional): Number of results to skip (default: 0).
+
+**Success Response** (200 OK):
+Returns an array of product objects.
+
+```json
+[
+  {
+    "id": 1,
+    "name": "Smartphone X",
+    "type": "Electronics",
+    "sku": "SPX-001",
+    "image_url": "http://example.com/spx.jpg",
+    "description": "Latest model smartphone.",
+    "quantity": 50,
+    "price": "799.99",
+    "times_added": 7
+  }
+]
+```
+
+**Error Responses**:
+
+- **401 Unauthorized**: Missing or invalid authentication token.
+
+---
+
+#### 4. Add a Product
 
 **POST** `/products`
 
-Creates a new product entry. If a product with the same SKU already exists, its `times_added` count will be incremented.
+Adds a new product to the inventory. Increments `times_added` if an existing product matches the SKU.
 
-**Authentication Required**: Yes (`bearerAuth`)
+**Authentication Required**: Yes
 
 **Request Body**:
 
@@ -149,17 +216,18 @@ Creates a new product entry. If a product with the same SKU already exists, its 
 }
 ```
 
-**Request Body Parameters**:
+**Parameters**:
 
-- `name` (string, required): The name of the product.
-- `type` (string, required): The category or type of the product.
-- `sku` (string, required): The Stock Keeping Unit, which must be unique.
-- `image_url` (string, optional): A URL to an image of the product.
-- `description` (string, optional): A description of the product.
-- `quantity` (integer, required): The initial quantity of the product (must be non-negative).
-- `price` (number, required): The price of the product.
+- `name` (string, required): Product name.
+- `type` (string, required): Product category.
+- `sku` (string, required): Unique SKU.
+- `image_url` (string, optional): URL for product image.
+- `description` (string, optional): Product description.
+- `quantity` (integer, required): Initial stock quantity.
+- `price` (number, required): Product price.
 
 **Success Response** (201 Created):
+Confirmation of product addition.
 
 ```json
 {
@@ -170,67 +238,15 @@ Creates a new product entry. If a product with the same SKU already exists, its 
 
 **Error Responses**:
 
-- **400 Bad Request**: Missing or invalid fields.
+- **400 Bad Request**: Input validation failure (e.g., missing `name`).
   ```json
-  {
-    "error": "Name is required"
-  }
+  { "error": "Name is required" }
   ```
-- **401 Unauthorized**: If authentication token is missing or invalid.
-- **409 Conflict**: If a product with the same SKU already exists and cannot be handled as an update (e.g., name mismatch).
+- **401 Unauthorized**: Authentication token invalid or missing.
+- **409 Conflict**: SKU already exists and conflicts with current data.
   ```json
-  {
-    "error": "SKU already exists"
-  }
+  { "error": "SKU already exists" }
   ```
-
----
-
-#### 4. Get Products List
-
-**GET** `/products`
-
-Retrieves a paginated list of all products in the inventory.
-
-**Authentication Required**: Yes (`bearerAuth`)
-
-**Query Parameters**:
-
-- `limit` (integer, optional): The maximum number of products to return (default: 10).
-- `offset` (integer, optional): The number of products to skip from the beginning (default: 0).
-
-**Success Response** (200 OK):
-
-```json
-[
-  {
-    "id": 1,
-    "name": "Laptop",
-    "type": "Electronics",
-    "sku": "LAP001",
-    "image_url": "http://example.com/laptop.jpg",
-    "description": "Powerful laptop for work and gaming",
-    "quantity": 15,
-    "price": "1200.00",
-    "times_added": 3
-  },
-  {
-    "id": 2,
-    "name": "Wireless Mouse",
-    "type": "Accessories",
-    "sku": "MSE002",
-    "image_url": null,
-    "description": null,
-    "quantity": 50,
-    "price": "25.00",
-    "times_added": 5
-  }
-]
-```
-
-**Error Responses**:
-
-- **401 Unauthorized**: If authentication token is missing or invalid.
 
 ---
 
@@ -238,9 +254,9 @@ Retrieves a paginated list of all products in the inventory.
 
 **PUT** `/products/{id}/quantity`
 
-Updates the quantity of a specific product by its ID.
+Modifies the stock quantity for a specified product.
 
-**Authentication Required**: Yes (`bearerAuth`)
+**Authentication Required**: Yes
 
 **Path Parameters**:
 
@@ -254,40 +270,37 @@ Updates the quantity of a specific product by its ID.
 }
 ```
 
-**Request Body Parameters**:
+**Parameters**:
 
-- `quantity` (integer, required): The new quantity for the product (must be a non-negative integer).
+- `quantity` (integer, required): The new, non-negative quantity.
 
 **Success Response** (200 OK):
+Returns the updated product details.
 
 ```json
 {
   "id": 1,
-  "name": "Laptop",
+  "name": "Smartphone X",
   "type": "Electronics",
-  "sku": "LAP001",
-  "image_url": "http://example.com/laptop.jpg",
-  "description": "Powerful laptop for work and gaming",
-  "quantity": 20,
-  "price": "1200.00",
-  "times_added": 3
+  "sku": "SPX-001",
+  "image_url": "http://example.com/spx.jpg",
+  "description": "Latest model smartphone.",
+  "quantity": 75,
+  "price": "799.99",
+  "times_added": 7
 }
 ```
 
 **Error Responses**:
 
-- **400 Bad Request**: Invalid quantity provided.
+- **400 Bad Request**: Invalid quantity input.
   ```json
-  {
-    "error": "Quantity must be a non-negative integer"
-  }
+  { "error": "Quantity must be a non-negative integer" }
   ```
-- **401 Unauthorized**: If authentication token is missing or invalid.
-- **404 Not Found**: If the product with the given ID does not exist.
+- **401 Unauthorized**: Missing or invalid authentication token.
+- **404 Not Found**: Product with the given ID does not exist.
   ```json
-  {
-    "error": "Product not found"
-  }
+  { "error": "Product not found" }
   ```
 
 ---
@@ -296,15 +309,16 @@ Updates the quantity of a specific product by its ID.
 
 **DELETE** `/products/{id}`
 
-Deletes a product from the inventory by its ID.
+Removes a product from the inventory.
 
-**Authentication Required**: Yes (`bearerAuth`)
+**Authentication Required**: Yes
 
 **Path Parameters**:
 
 - `id` (integer, required): The unique ID of the product to delete.
 
 **Success Response** (200 OK):
+Confirms product deletion.
 
 ```json
 {
@@ -314,153 +328,107 @@ Deletes a product from the inventory by its ID.
 
 **Error Responses**:
 
-- **401 Unauthorized**: If authentication token is missing or invalid.
-- **404 Not Found**: If the product with the given ID does not exist.
+- **401 Unauthorized**: Missing or invalid authentication token.
+- **404 Not Found**: Product with the given ID does not exist.
   ```json
-  {
-    "error": "Product not found"
-  }
+  { "error": "Product not found" }
   ```
 
 ---
 
-### Analytics Endpoints
+### Analytics & Insights
 
 #### 7. Get Most Added Products
 
 **GET** `/products/analytics/most-added`
 
-Retrieves a list of products ordered by how many times they have been added, providing basic analytics on popular additions.
+Provides a list of products ranked by how many times they've been added, offering a basic popularity metric.
 
-**Authentication Required**: Yes (`bearerAuth`)
+**Authentication Required**: Yes
 
 **Query Parameters**:
 
-- `limit` (integer, optional): The maximum number of most added products to return (default: 5).
+- `limit` (integer, optional): The maximum number of products to return (default: 5).
 
 **Success Response** (200 OK):
+Returns an array of products with their add counts.
 
 ```json
 [
   {
-    "id": 2,
-    "name": "Wireless Mouse",
-    "times_added": 5
-  },
-  {
-    "id": 1,
-    "name": "Laptop",
-    "times_added": 3
+    "id": 5,
+    "name": "Bluetooth Headphones",
+    "times_added": 12
   },
   {
     "id": 3,
-    "name": "Keyboard",
-    "times_added": 2
+    "name": "Portable Charger",
+    "times_added": 9
   }
 ]
 ```
 
 **Error Responses**:
 
-- **401 Unauthorized**: If authentication token is missing or invalid.
+- **401 Unauthorized**: Missing or invalid authentication token.
 
 ---
 
-## Data Models
+## Error Handling Standards
 
-### User
-
-Represents a user account in the system.
-
-```json
-{
-  "id": "number",
-  "username": "string",
-  "password_hash": "string" // Hashed password
-}
-```
-
-### Product
-
-Represents an inventory item.
-
-```json
-{
-  "id": "number",
-  "name": "string",
-  "type": "string",
-  "sku": "string",
-  "image_url": "string",
-  "description": "string",
-  "quantity": "integer",
-  "price": "number",
-  "times_added": "integer" // Number of times this product has been added
-}
-```
-
----
-
-## Error Handling
-
-All API endpoints adhere to a consistent error response pattern.
+All API errors are returned in a consistent JSON format to facilitate easier client-side handling.
 
 ### Common HTTP Status Codes
 
 **Success Codes:**
 
-- **200 OK**: The request was successful, and the response body contains the requested data.
-- **201 Created**: The request has resulted in a new resource being created.
+- **200 OK**: Request processed successfully, data returned.
+- **201 Created**: A new resource was successfully created.
 
 **Error Codes:**
 
-- **400 Bad Request**: The server cannot process the request due to client error (e.g., malformed syntax, invalid request parameters, failed validation).
-- **401 Unauthorized**: Authentication is required or has failed (e.g., missing or invalid JWT token).
-- **404 Not Found**: The requested resource could not be found.
-- **409 Conflict**: The request could not be completed due to a conflict with the current state of the target resource (e.g., duplicate unique identifier).
-- **500 Internal Server Error**: A generic error message, given when an unexpected condition was encountered on the server.
+- **400 Bad Request**: Client-side input validation failed.
+- **401 Unauthorized**: Authentication required; token is missing, invalid, or expired.
+- **404 Not Found**: The requested resource does not exist.
+- **409 Conflict**: Request could not be completed due to a data conflict (e.g., unique constraint violation).
+- **500 Internal Server Error**: An unexpected server-side error occurred.
 
-### Error Response Format
-
-All error responses will have the following JSON structure:
+### Standard Error Response Format
 
 ```json
 {
-  "error": "A descriptive message explaining the error"
+  "error": "A concise, human-readable message describing the error."
 }
 ```
 
 ---
 
-## Authentication Details
+## JWT Details
 
-### JWT Token Structure
+### Token Structure
 
-The JWT token generated upon successful login contains the following claims:
+Our JWTs encode essential user information:
 
-- `id`: The unique ID of the user.
-- `username`: The username of the authenticated user.
-- `iat`: (Issued At) Timestamp when the token was issued.
-- `exp`: (Expiration Time) Timestamp when the token expires (typically 24 hours from issue).
+- `id`: The unique identifier of the user.
+- `username`: The username associated with the token.
+- `iat`: (Issued At) Timestamp indicating when the token was generated.
+- `exp`: (Expiration Time) Timestamp indicating when the token becomes invalid (24 hours after `iat`).
 
-### Token Usage
-
-After logging in, clients must include the obtained JWT token in the `Authorization` header of all subsequent requests to protected endpoints.
-
-Example:
+### Token Usage Example
 
 ```
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJ0ZXN0dXNlciIsImlhdCI6MTY3ODU2NzQyMCwiZXhwIjoxNjc4NjUzODIwfQ.your_jwt_signature_here
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIsInVzZXJuYW1lIjoiZGV2dXNlciIsImlhdCI6MTY3ODU2NzQyMCwiZXhwIjoxNjc4NjUzODIwfQ.another_signature_string
 ```
 
 ### Token Expiration
 
-JWT tokens are valid for 24 hours. Once a token expires, users must re-authenticate by logging in again to obtain a new valid token.
+For security, JWTs are short-lived, expiring 24 hours after issuance. Clients should handle expired tokens by prompting the user to log in again to acquire a new token.
 
 ---
 
-## Environment Variables
+## Environment Configuration
 
-The backend requires the following environment variables to be configured in a `.env` file in the `backend/` directory:
+The backend application requires the following environment variables, typically loaded from a `.env` file in the `backend/` directory:
 
-- `DATABASE_URL`: The connection string for your PostgreSQL database (e.g., `postgresql://user:password@host:port/database?sslmode=require`).
-- `JWT_SECRET`: A strong, secret key used for signing and verifying JWT tokens.
+- `DATABASE_URL`: Your PostgreSQL connection string.
+- `JWT_SECRET`: A strong, confidential key for cryptographic signing of JWTs.
