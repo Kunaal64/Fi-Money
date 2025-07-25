@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080';
+
 export default function Register({ onRegister }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -13,7 +15,7 @@ export default function Register({ onRegister }) {
     setError('');
     setLoading(true);
     try {
-      await axios.post('http://localhost:8080/register', { username, password });
+      await axios.post(`${API_BASE_URL}/register`, { username, password });
       setSuccess(true);
       if (onRegister) onRegister();
     } catch (err) {

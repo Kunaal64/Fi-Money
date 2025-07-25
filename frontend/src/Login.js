@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080';
+
 export default function Login({ onLogin }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -12,7 +14,7 @@ export default function Login({ onLogin }) {
     setError('');
     setLoading(true);
     try {
-      const res = await axios.post('http://localhost:8080/login', { username, password });
+      const res = await axios.post(`${API_BASE_URL}/login`, { username, password });
       onLogin(res.data.access_token);
     } catch (err) {
       setError(err.response?.data?.error || 'Login failed');

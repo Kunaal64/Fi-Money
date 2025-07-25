@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { FaTrash } from 'react-icons/fa';
 
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080';
+
 const DEFAULT_IMAGE = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='60' height='60'><rect width='100%' height='100%' fill='%23ccc'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%23666' font-size='10'>No Img</text></svg>";
 
 export default function ProductList({ token }) {
@@ -19,7 +21,7 @@ export default function ProductList({ token }) {
   const loadProducts = async () => {
     setLoading(true);
     try {
-      const res = await axios.get('http://localhost:8080/products');
+      const res = await axios.get(`${API_BASE_URL}/products`);
       setProducts(res.data);
     } catch (err) {
       setError('Failed to load products');
@@ -31,7 +33,7 @@ export default function ProductList({ token }) {
     e.preventDefault();
     setAddError('');
     try {
-      const response = await axios.post('http://localhost:8080/products', {
+      const response = await axios.post(`${API_BASE_URL}/products`, {
         ...form,
         quantity: Number(form.quantity),
         price: Number(form.price)
@@ -48,7 +50,7 @@ export default function ProductList({ token }) {
 
   const loadMostAdded = async () => {
     try {
-      const res = await axios.get('http://localhost:8080/products/analytics/most-added');
+      const res = await axios.get(`${API_BASE_URL}/products/analytics/most-added`);
       setMostAdded(res.data);
     } catch (err) {
       console.error('Failed to load most added products analytics:', err);
@@ -79,7 +81,7 @@ export default function ProductList({ token }) {
       return;
     }
     try {
-      await axios.put(`http://localhost:8080/products/${id}/quantity`, { quantity: Number(editingQty) });
+      await axios.put(`${API_BASE_URL}/products/${id}/quantity`, { quantity: Number(editingQty) });
       setProducts(products => products.map(p => p.id === id ? { ...p, quantity: Number(editingQty) } : p));
       setEditingId(null);
     } catch (err) {
@@ -90,7 +92,7 @@ export default function ProductList({ token }) {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:8080/products/${id}`);
+      await axios.delete(`${API_BASE_URL}/products/${id}`);
       setProducts(products => products.filter(p => p.id !== id));
       setDeleteId(null);
     } catch (err) {
