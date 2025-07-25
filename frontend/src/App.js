@@ -46,7 +46,7 @@ function App() {
         <ProductList token={token} />
       ) : (
         <>
-          <div style={{ textAlign: 'center', marginBottom: 24 }}>
+          <div style={{ textAlign: 'center', marginBottom: 15 }}>
             {page === 'login' ? (
               <>
                 <span>Don't have an account?{' '}
