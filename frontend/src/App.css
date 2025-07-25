@@ -1,0 +1,474 @@
+html, body, #root {
+  height: 100%;
+  /* overflow: hidden; /* Prevent scrolling on the entire page */
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f5f7fa;
+  color: #334e68;
+  line-height: 1.6;
+  font-size: 16px;
+}
+
+.body-no-scroll {
+  overflow: hidden;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.app-container {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px; /* Revert padding */
+  max-width: 1400px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.app-header-flex {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 0;
+  margin-bottom: 50px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.app-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 3.2em; /* Slightly larger title */
+  color: #2c5282;
+  margin: 0;
+  font-weight: 800; /* Even bolder for impact */
+  letter-spacing: -0.8px;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.08);
+}
+
+.logout-btn {
+  background-color: #ef4444; /* Brighter red */
+  color: white;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 30px; /* More rounded */
+  cursor: pointer;
+  font-size: 1em;
+  font-weight: 700;
+  transition: all 0.3s ease;
+  box-shadow: 0 5px 15px rgba(239, 68, 68, 0.25);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logout-btn:hover {
+  background-color: #dc2626;
+  box-shadow: 0 8px 20px rgba(220, 38, 38, 0.35);
+  transform: translateY(-3px);
+}
+
+/* General button styles for a simple look */
+button {
+  background-color: #3b82f6; /* A more vibrant blue */
+  color: white;
+  border: none;
+  padding: 14px 30px;
+  border-radius: 30px;
+  cursor: pointer;
+  font-size: 1.1em;
+  font-weight: 700;
+  transition: all 0.3s ease;
+  box-shadow: 0 5px 15px rgba(59, 130, 246, 0.25);
+  text-transform: uppercase; /* Uppercase text for buttons */
+  letter-spacing: 0.5px;
+}
+
+button:hover {
+  background-color: #2563eb;
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
+  transform: translateY(-3px);
+}
+
+button:disabled {
+  background-color: #cbd5e1;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  color: #3b82f6;
+  text-decoration: none;
+  cursor: pointer;
+  font-size: 1em;
+  padding: 0 5px;
+  transition: color 0.3s ease;
+  font-weight: 600;
+}
+.link-btn:hover {
+  color: #2563eb;
+}
+
+.success-message {
+  color: #059669;
+  font-size: 1.05em;
+  text-align: center;
+  margin-bottom: 25px;
+  padding: 12px;
+  background-color: #ecfdf5;
+  border-left: 6px solid #059669;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(5, 150, 105, 0.1);
+}
+
+.error-message {
+  color: #dc2626;
+  font-size: 1em;
+  text-align: center;
+  margin-top: -15px;
+  margin-bottom: 20px;
+  padding: 12px;
+  background-color: #fef2f2;
+  border-left: 6px solid #dc2626;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.1);
+}
+
+.centered-page {
+  flex-grow: 1; /* Keep flex-grow for centering */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 100px); /* Revert min-height */
+  width: 100%;
+}
+
+.auth-card, .modal-card, .analytics-section {
+  background: #ffffff;
+  padding: 45px; /* Revert padding */
+  border-radius: 16px;
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.15);
+  width: 100%;
+  max-width: 480px; /* Revert max-width */
+  margin: 25px; /* Revert margin */
+  box-sizing: border-box;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.auth-title {
+  text-align: center;
+  font-size: 2.5em; /* Revert font size */
+  color: #2c5282;
+  margin-bottom: 35px; /* Revert margin */
+  font-weight: 700;
+}
+
+.auth-input, .product-input {
+  width: calc(100% - 28px); /* Account for padding and border */
+  padding: 14px; /* Revert padding */
+  border: 1px solid #e2e8f0;
+  border-radius: 10px; /* Revert border radius */
+  font-size: 1.1em;
+  box-sizing: border-box;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.auth-input:focus, .product-input:focus {
+  border-color: #3b82f6;
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.25);
+}
+
+.auth-btn {
+  width: 100%;
+  padding: 18px; /* Revert padding */
+  margin-top: 25px; /* Revert margin */
+  font-size: 1.3em; /* Revert font size */
+}
+
+/* Adjustments for the product list to fit in view if needed */
+.product-list-card {
+  max-width: 1200px; /* Revert to original wider max-width */
+  margin: 3rem auto; /* Revert to original margin */
+  padding: 40px; /* Revert to original padding */
+  border-radius: 16px;
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.15);
+}
+
+.product-list-title {
+  font-size: 2.5em;
+  color: #2c5282;
+  margin-bottom: 35px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.product-table-wrapper {
+  overflow-x: auto;
+  margin-top: 30px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  /* Remove max-height and overflow-y from here */
+}
+
+.product-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.product-table th,
+.product-table td {
+  border: 1px solid #edf2f7;
+  padding: 15px 18px;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.product-table th {
+  background-color: #ebf4ff;
+  font-weight: 700;
+  color: #4a5568;
+  text-align: center;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  text-transform: uppercase;
+  font-size: 0.9em;
+  letter-spacing: 0.5px;
+}
+
+.product-table td {
+  font-size: 1em;
+  color: #4a5568;
+}
+
+.product-table tbody tr:nth-child(even) {
+  background-color: #f7fafc;
+}
+
+.product-table tbody tr:hover {
+  background-color: #e6fffa;
+}
+
+.product-table td:nth-child(1),
+.product-table td:nth-child(6),
+.product-table td:nth-child(7),
+.product-table td:nth-child(8) {
+  text-align: center;
+}
+
+.product-table img {
+  width: 70px; /* Larger image preview */
+  height: 70px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+.product-table td span {
+  display: inline-block;
+  min-width: 60px;
+  border-radius: 8px;
+  padding: 8px 12px;
+  background: #e2e8f0;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+  font-weight: 600;
+  color: #4a5568;
+  border: 1px solid #cbd5e1;
+}
+
+.product-table td span:hover {
+  background: #d6e4f3;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.product-input {
+  padding: 12px;
+  margin-right: 10px;
+  width: 110px; /* Slightly wider for better input */
+}
+
+.product-btn {
+  padding: 12px 25px;
+  font-size: 1em;
+  margin-left: 10px;
+  background-color: #10b981; /* Brighter green */
+  box-shadow: 0 5px 15px rgba(16, 185, 129, 0.25);
+}
+
+.product-btn:hover {
+  background-color: #059669;
+  box-shadow: 0 8px 20px rgba(5, 150, 105, 0.35);
+}
+
+.update-qty-form {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6); /* Darker, more prominent overlay */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(8px); /* Stronger blur effect */
+}
+
+.modal-card {
+  padding: 50px;
+  max-width: 600px; /* Even larger modal card */
+  text-align: center;
+  animation: fadeInScale 0.4s ease-out; /* New animation */
+}
+
+@keyframes fadeInScale {
+  from { opacity: 0; transform: translateY(-30px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.modal-card h3 {
+  font-size: 2em;
+  margin-bottom: 30px;
+  color: #2c5282;
+  font-weight: 700;
+}
+
+.modal-card p {
+  font-size: 1.1em;
+  margin-bottom: 30px;
+  color: #555;
+}
+
+.modal-card > div {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.cancel-btn {
+  background-color: #94a3b8; /* Softer grey */
+  box-shadow: 0 5px 15px rgba(148, 163, 184, 0.25);
+}
+
+.cancel-btn:hover {
+  background-color: #64748b;
+  box-shadow: 0 8px 20px rgba(100, 116, 139, 0.35);
+}
+
+.delete-confirm-btn {
+  background-color: #ef4444;
+  box-shadow: 0 5px 15px rgba(239, 68, 68, 0.25);
+}
+
+.delete-confirm-btn:hover {
+  background-color: #dc2626;
+  box-shadow: 0 8px 20px rgba(220, 38, 38, 0.35);
+}
+
+.add-product-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Two columns for better layout */
+  gap: 20px;
+  padding: 0 10px; /* Add some horizontal padding */
+}
+
+.add-product-form .product-input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.add-product-form .product-input[type="number"] {
+  width: 100%;
+}
+
+.add-product-form .full-width {
+  grid-column: 1 / -1; /* Make description and image URL full width */
+}
+
+.add-product-form .button-group {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end; /* Align buttons to the right */
+  gap: 15px;
+  margin-top: 25px;
+}
+
+.modal-card .add-product-form + .error-message {
+  grid-column: 1 / -1; /* Make error message span full width */
+  margin-top: -15px;
+  margin-bottom: 20px;
+}
+
+/* Analytics Section */
+.analytics-section {
+  background-color: #ffffff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  margin-bottom: 30px;
+  margin-top: 20px;
+  width: 100%;
+  max-width: 450px; /* Same width as auth cards for consistency */
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.analytics-section h3 {
+  font-size: 1.5em;
+  color: #34495e;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+.analytics-section ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.analytics-section li {
+  background-color: #f9f9f9;
+  border: 1px solid #eee;
+  padding: 10px 15px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1em;
+  color: #555;
+  font-weight: 500;
+}
+
+.analytics-section li:last-child {
+  margin-bottom: 0;
+}
