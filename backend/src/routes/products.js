@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { authenticateToken } from '../middleware/auth.js';
-import { createProduct, updateQuantity, listProducts, removeProduct, getMostAdded } from '../controllers/productController.js';
+import { createProduct, updateQuantity, listProducts, removeProduct } from '../controllers/productController.js';
 import { body, param } from 'express-validator';
 
 const router = Router();
@@ -31,7 +31,8 @@ router.put(
 );
 
 router.get('/', authenticateToken, listProducts);
-router.get('/analytics/most-added', authenticateToken, getMostAdded);
+// Analytics route
+// router.get('/analytics/most-added', authenticateToken, getMostAdded);
 router.delete('/:id', authenticateToken, removeProduct);
 
 export default router;

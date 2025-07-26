@@ -15,6 +15,5 @@ CREATE TABLE products (
     image_url TEXT,
     description TEXT,
     quantity INTEGER NOT NULL,
-    price NUMERIC(10,2) NOT NULL,
-    times_added INTEGER DEFAULT 0
+    price NUMERIC(10,2) NOT NULL
 ); 

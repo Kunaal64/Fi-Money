@@ -1,4 +1,4 @@
-import { addProduct, updateProductQuantity, getProducts, getProductById, deleteProduct, incrementTimesAdded, getMostAddedProducts } from '../models/product.js';
+import { addProduct, updateProductQuantity, getProducts, getProductById, deleteProduct } from '../models/product.js';
 import { validationResult } from 'express-validator';
 
 export async function createProduct(req, res, next) {
@@ -10,7 +10,7 @@ export async function createProduct(req, res, next) {
   try {
     const product = await addProduct({ name, type, sku, image_url, description, quantity, price });
     // Increment times_added for the product
-    await incrementTimesAdded(product.id); // Assuming product.id is returned from addProduct
+    // await incrementTimesAdded(product.id); // Assuming product.id is returned from addProduct
     res.status(201).json({ product_id: product.id, message: 'Product created' });
   } catch (err) {
     if (err.code === '23505') { // unique violation
@@ -37,15 +37,15 @@ export async function updateQuantity(req, res, next) {
   }
 }
 
-export async function getMostAdded(req, res, next) {
-  try {
-    const limit = parseInt(req.query.limit) || 5;
-    const products = await getMostAddedProducts(limit);
-    res.json(products);
-  } catch (err) {
-    next(err);
-  }
-}
+// export async function getMostAdded(req, res, next) {
+//   try {
+//     const limit = parseInt(req.query.limit) || 5;
+//     const products = await getMostAddedProducts(limit);
+//     res.json(products);
+//   } catch (err) {
+//     next(err);
+//   }
+// }
 
 export async function listProducts(req, res, next) {
   try {

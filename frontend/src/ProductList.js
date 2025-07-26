@@ -16,7 +16,6 @@ export default function ProductList({ token }) {
   const [editingId, setEditingId] = useState(null);
   const [editingQty, setEditingQty] = useState('');
   const [deleteId, setDeleteId] = useState(null);
-  const [mostAdded, setMostAdded] = useState([]);
 
   const loadProducts = async () => {
     setLoading(true);
@@ -38,7 +37,6 @@ export default function ProductList({ token }) {
         quantity: Number(form.quantity),
         price: Number(form.price)
       });
-      loadMostAdded(); // Call loadMostAdded after a product is added
 
       setForm({ name: '', type: '', sku: '', image_url: '', description: '', quantity: '', price: '' });
       setShowModal(false);
@@ -48,21 +46,11 @@ export default function ProductList({ token }) {
     }
   };
 
-  const loadMostAdded = async () => {
-    try {
-      const res = await axios.get(`${API_BASE_URL}/products/analytics/most-added`);
-      setMostAdded(res.data);
-    } catch (err) {
-      console.error('Failed to load most added products analytics:', err);
-    }
-  };
-
   useEffect(() => {
     if (token) {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     }
     loadProducts();
-    loadMostAdded(); // Load analytics on component mount
     // eslint-disable-next-line
   }, [token]);
 
@@ -109,17 +97,6 @@ export default function ProductList({ token }) {
       <h2 className="product-list-title">Products</h2>
       <button className="product-btn" onClick={() => setShowModal(true)}>Add Product</button>
 
-      {mostAdded.length > 0 && (
-        <div className="analytics-section">
-          <h3>Most Added Products</h3>
-          <ul>
-            {mostAdded.map((p) => (
-              <li key={p.id}>{p.name} ({p.times_added})</li>
-            ))}
-          </ul>
-        </div>
-      )}
-
       <table className="product-table">
         <thead>
           <tr>
@@ -134,52 +111,34 @@ export default function ProductList({ token }) {
           </tr>
         </thead>
         <tbody>
-          {products.map(p => (
-            <tr key={p.id}>
-              <td>
-                <img
-                  src={p.image_url ? p.image_url : DEFAULT_IMAGE}
-                  alt={p.name}
-                  onError={e => { e.target.onerror = null; e.target.src = DEFAULT_IMAGE; }}
-                />
-              </td>
-              <td>{p.name}</td>
-              <td>{p.type}</td>
-              <td>{p.sku}</td>
-              <td>
-                {p.description ? p.description : 'No description'}
-              </td>
-              <td>
-                {editingId === p.id ? (
+          {products.map((product) => (
+            <tr key={product.id}>
+              <td><img src={product.image_url || DEFAULT_IMAGE} alt={product.name} className="product-thumbnail" /></td>
+              <td>{product.name}</td>
+              <td>{product.type}</td>
+              <td>{product.sku}</td>
+              <td>{product.description}</td>
+              <td
+                onDoubleClick={() => handleQtyClick(product.id, product.quantity)}
+                className="quantity-cell"
+              >
+                {editingId === product.id ? (
                   <input
                     type="number"
                     value={editingQty}
-                    autoFocus
-                    className="product-input"
                     onChange={handleQtyChange}
-                    onBlur={() => handleQtyBlurOrEnter(p.id)}
-                    onKeyDown={e => {
-                      if (e.key === 'Enter') {
-                        e.preventDefault();
-                        handleQtyBlurOrEnter(p.id);
-                      } else if (e.key === 'Escape') {
-                        setEditingId(null);
-                      }
-                    }}
+                    onBlur={() => handleQtyBlurOrEnter(product.id)}
+                    onKeyPress={(e) => { if (e.key === 'Enter') handleQtyBlurOrEnter(product.id); }}
+                    autoFocus
+                    className="quantity-input"
                   />
                 ) : (
-                  <span onClick={() => handleQtyClick(p.id, p.quantity)} title="Click to edit">
-                    {p.quantity}
-                  </span>
+                  product.quantity
                 )}
               </td>
-              <td>{Number(p.price).toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+              <td>Rs{product.price ? parseFloat(product.price).toFixed(2) : '0.00'}</td>
               <td>
-                <button
-                  className="delete-btn"
-                  title="Delete product"
-                  onClick={() => setDeleteId(p.id)}
-                >
+                <button onClick={() => setDeleteId(product.id)} className="delete-btn">
                   <FaTrash />
                 </button>
               </td>
@@ -187,6 +146,26 @@ export default function ProductList({ token }) {
           ))}
         </tbody>
       </table>
+
+      {products.length === 0 && !loading && !error && (
+        <div className="no-products-message">
+          No products found. Add some products to get started!
+        </div>
+      )}
+
+      {deleteId && (
+        <div className="modal-overlay">
+          <div className="modal-card">
+            <h3>Confirm Delete</h3>
+            <p>Are you sure you want to delete this product?</p>
+            <div className="button-group">
+              <button onClick={() => handleDelete(deleteId)} className="product-btn delete-btn">Delete</button>
+              <button onClick={() => setDeleteId(null)} className="product-btn cancel-btn">Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {showModal && (
         <div className="modal-overlay" onClick={() => setShowModal(false)}>
           <div className="modal-card" onClick={e => e.stopPropagation()}>
@@ -199,7 +178,7 @@ export default function ProductList({ token }) {
               <input placeholder="Description" value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} className="product-input full-width" />
               <input placeholder="Quantity" type="number" value={form.quantity} onChange={e => setForm(f => ({ ...f, quantity: e.target.value }))} required className="product-input" />
               <input placeholder="Price" type="number" value={form.price} onChange={e => setForm(f => ({ ...f, price: e.target.value }))} required className="product-input" />
-              {addError && <span className="error-message">{addError}</span>}
+              {addError && <span className="error-message">{Array.isArray(addError) ? addError[0].msg : addError}</span>}
               <div className="button-group">
                 <button type="submit" className="product-btn">Add</button>
                 <button type="button" className="product-btn cancel-btn" onClick={() => setShowModal(false)}>Cancel</button>
@@ -208,18 +187,6 @@ export default function ProductList({ token }) {
           </div>
         </div>
       )}
-      {deleteId && (
-        <div className="modal-overlay" onClick={() => setDeleteId(null)}>
-          <div className="modal-card" onClick={e => e.stopPropagation()}>
-            <h3>Delete Product</h3>
-            <p>Are you sure you want to delete this product?</p>
-            <div>
-              <button className="product-btn delete-confirm-btn" onClick={() => handleDelete(deleteId)}>Delete</button>
-              <button className="product-btn" onClick={() => setDeleteId(null)}>Cancel</button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
-} 
+}
