@@ -51,8 +51,8 @@ export async function listProducts(req, res, next) {
   try {
     const limit = parseInt(req.query.limit) || 10;
     const offset = parseInt(req.query.offset) || 0;
-    const products = await getProducts(limit, offset);
-    res.json(products);
+    const { products, totalCount } = await getProducts(limit, offset);
+    res.json({ products, totalCount });
   } catch (err) {
     next(err);
   }

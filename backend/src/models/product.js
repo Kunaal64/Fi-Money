@@ -8,9 +8,13 @@ export async function addProduct({ name, type, sku, image_url, description, quan
   return res.rows[0];
 }
 
-export async function getProducts() {
-  const res = await pool.query('SELECT * FROM products');
-  return res.rows;
+export async function getProducts(limit = 10, offset = 0) {
+  const productsRes = await pool.query(
+    `SELECT * FROM products ORDER BY id LIMIT $1 OFFSET $2`,
+    [limit, offset]
+  );
+  const countRes = await pool.query('SELECT COUNT(*) FROM products');
+  return { products: productsRes.rows, totalCount: parseInt(countRes.rows[0].count) };
 }
 
 export async function getProductById(id) {

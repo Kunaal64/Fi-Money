@@ -16,12 +16,18 @@ export default function ProductList({ token }) {
   const [editingId, setEditingId] = useState(null);
   const [editingQty, setEditingQty] = useState('');
   const [deleteId, setDeleteId] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [productsPerPage] = useState(10); // Set products per page to 10
+  const [totalProducts, setTotalProducts] = useState(0);
 
-  const loadProducts = async () => {
+  const loadProducts = async (page = 1) => {
     setLoading(true);
     try {
-      const res = await axios.get(`${API_BASE_URL}/products`);
-      setProducts(res.data);
+      const offset = (page - 1) * productsPerPage;
+      const res = await axios.get(`${API_BASE_URL}/products?limit=${productsPerPage}&offset=${offset}`);
+      setProducts(res.data.products);
+      setTotalProducts(res.data.totalCount);
+      setCurrentPage(page);
     } catch (err) {
       setError('Failed to load products');
     }
@@ -40,7 +46,7 @@ export default function ProductList({ token }) {
 
       setForm({ name: '', type: '', sku: '', image_url: '', description: '', quantity: '', price: '' });
       setShowModal(false);
-      loadProducts();
+      loadProducts(currentPage); // Reload current page after adding
     } catch (err) {
       setAddError(err.response?.data?.error || 'Add failed');
     }
@@ -50,9 +56,9 @@ export default function ProductList({ token }) {
     if (token) {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     }
-    loadProducts();
+    loadProducts(currentPage);
     // eslint-disable-next-line
-  }, [token]);
+  }, [token, currentPage]);
 
   const handleQtyClick = (id, currentQty) => {
     setEditingId(id);
@@ -105,7 +111,7 @@ export default function ProductList({ token }) {
             <th>Type</th>
             <th>SKU</th>
             <th>Description</th>
-            <th>Quantity</th>
+            <th>Quantity <span className="quantity-edit-note">(Double-click to edit)</span></th>
             <th>Price</th>
             <th></th>
           </tr>
@@ -152,6 +158,24 @@ export default function ProductList({ token }) {
           No products found. Add some products to get started!
         </div>
       )}
+
+      <div className="pagination-controls">
+        <button
+          onClick={() => loadProducts(currentPage - 1)}
+          disabled={currentPage === 1}
+          className="product-btn"
+        >
+          Previous
+        </button>
+        <span>Page {currentPage} of {Math.ceil(totalProducts / productsPerPage)}</span>
+        <button
+          onClick={() => loadProducts(currentPage + 1)}
+          disabled={currentPage * productsPerPage >= totalProducts}
+          className="product-btn"
+        >
+          Next
+        </button>
+      </div>
 
       {deleteId && (
         <div className="modal-overlay">
