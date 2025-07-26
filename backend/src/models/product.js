@@ -10,7 +10,7 @@ export async function addProduct({ name, type, sku, image_url, description, quan
 
 export async function getProducts(limit = 10, offset = 0) {
   const productsRes = await pool.query(
-    `SELECT * FROM products ORDER BY id LIMIT $1 OFFSET $2`,
+    `SELECT * FROM products ORDER BY id DESC LIMIT $1 OFFSET $2`,
     [limit, offset]
   );
   const countRes = await pool.query('SELECT COUNT(*) FROM products');
