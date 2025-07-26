@@ -1,3 +1,6 @@
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS products;
+
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
@@ -14,4 +17,4 @@ CREATE TABLE products (
     quantity INTEGER NOT NULL,
     price NUMERIC(10,2) NOT NULL,
     times_added INTEGER DEFAULT 0
-);
+); 
