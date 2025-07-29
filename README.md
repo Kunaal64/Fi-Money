@@ -85,6 +85,68 @@ cd "Fi Money" # Move into the project root
     ```
     The React application should open in your browser, usually at `http://localhost:3000`.
 
+### 4. Docker Deployment (Optional)
+
+This project can be easily containerized using Docker for simplified deployment and environment consistency.
+
+1.  **Build the Docker Image:**
+    Navigate to the root directory of the project (where the `Dockerfile` is located) and run:
+
+    ```bash
+    docker build -t fi-money-backend .
+    ```
+
+2.  **Run the Docker Container:**
+    Start the backend application in a Docker container, mapping port `8080` (or your desired port) and setting the `PORT` environment variable:
+    ```bash
+    docker run -p 8080:8080 -e PORT=8080 fi-money-backend
+    ```
+    (You can replace `8080:8080` with `YOUR_HOST_PORT:8080` to map to a different port on your host machine.)
+
+### 5. Testing the Dockerized Application
+
+Once the Docker container is running, you can test the backend API endpoints using `curl` (on Linux/macOS/Git Bash) or `Invoke-WebRequest` (on PowerShell). Replace `http://localhost:8080` with your container's accessible address and port if different.
+
+**A. User Registration (New User):**
+
+To register a new user, send a POST request to the `/register` endpoint:
+
+```powershell
+Invoke-WebRequest -Uri http://localhost:8080/register -Method POST -Headers @{"Content-Type"="application/json"} -Body '{"username":"newuser","password":"newpassword"}'
+```
+
+(Expected: `StatusCode: 201 Created` with a `user_id`)
+
+**B. User Login (Existing or New User):**
+
+To log in and obtain an authentication token, send a POST request to the `/login` endpoint. This token is required for protected routes.
+
+```powershell
+# Get the access token (PowerShell)
+$accessToken = Invoke-WebRequest -Uri http://localhost:8080/login -Method POST -Headers @{"Content-Type"="application/json"} -Body '{"username":"newuser","password":"newpassword"}' | Select-Object -ExpandProperty Content | ConvertFrom-Json | Select-Object -ExpandProperty access_token
+Write-Host "Access Token: $($accessToken)"
+```
+
+**C. View Products List:**
+
+To view the list of products, send a GET request to the `/products` endpoint with your authentication token:
+
+```powershell
+Invoke-WebRequest -Uri http://localhost:8080/products -Method GET -Headers @{"Authorization"="Bearer $($accessToken)"} | Select-Object -ExpandProperty Content | ConvertFrom-Json
+```
+
+(Expected: A list of product objects)
+
+**D. Add a New Product:**
+
+To add a new product, send a POST request to the `/products` endpoint with product details and your authentication token:
+
+```powershell
+Invoke-WebRequest -Uri http://localhost:8080/products -Method POST -Headers @{"Content-Type"="application/json"; "Authorization"="Bearer $($accessToken)"} -Body '{"name":"Sample Product","type":"Electronics","sku":"SAMPLE001","quantity":50,"price":29.99,"description":"A description of the sample product."}'
+```
+
+(Expected: `StatusCode: 201 Created` with a `product_id` and `message`)
+
 ---
 
 ## Database Schema Overview
