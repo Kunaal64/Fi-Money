@@ -85,67 +85,104 @@ cd "Fi Money" # Move into the project root
     ```
     The React application should open in your browser, usually at `http://localhost:3000`.
 
-### 4. Docker Deployment (Optional)
+## Docker Deployment
 
-This project can be easily containerized using Docker for simplified deployment and environment consistency.
+This project is containerized using Docker Compose for simplified deployment and environment consistency. The setup includes three services:
+- Frontend (React) - runs on port 3001
+- Backend (Node.js/Express) - runs on port 8080
+- Database (PostgreSQL) - runs internally on port 5432
 
-1.  **Build the Docker Image:**
-    Navigate to the root directory of the project (where the `Dockerfile` is located) and run:
+### Prerequisites
+- Docker
+- Docker Compose
 
-    ```bash
-    docker build -t fi-money-backend .
-    ```
+### Quick Start
 
-2.  **Run the Docker Container:**
+1. **Clone the repository** (if you haven't already):
+   ```bash
+   git clone <repository-url>
+   cd "Fi Money"
+   ```
+
+2. **Start the application with Docker Compose**:
+   ```bash
+   docker compose up -d
+   ```
+   This will:
+   - Build the frontend and backend Docker images
+   - Start the PostgreSQL database
+   - Start the backend service
+   - Start the frontend service
+
+3. **Access the application**:
+   - Frontend: http://localhost:3001
+   - Backend API: http://localhost:8080
+   - Database: PostgreSQL running in a container (port 5432 internally)
+
+### Stopping the Application
+To stop all services:
+```bash
+docker compose down
+```
+
+### Environment Variables
+All necessary environment variables are already configured in the `docker-compose.yaml` file. You can modify them there if needed.
+
+### Development with Docker
+For development, you might want to mount your local source code into the containers. The current setup uses the built images, but you can modify the `docker-compose.yaml` file to mount your local directories for live reloading during development.
+
+2.  **Run the Backend Docker Container:**
     Start the backend application in a Docker container, mapping port `8080` (or your desired port) and setting the `PORT` environment variable:
     ```bash
     docker run -p 8080:8080 -e PORT=8080 fi-money-backend
     ```
     (You can replace `8080:8080` with `YOUR_HOST_PORT:8080` to map to a different port on your host machine.)
 
-### 5. Testing the Dockerized Application
+#### Frontend Dockerization
 
-Once the Docker container is running, you can test the backend API endpoints using `curl` (on Linux/macOS/Git Bash) or `Invoke-WebRequest` (on PowerShell). Replace `http://localhost:8080` with your container's accessible address and port if different.
+1.  **Build the Frontend Docker Image:**
+    Navigate to the root directory of the project and run:
 
-**A. User Registration (New User):**
+    ```bash
+    docker build -f Dockerfile.frontend -t fi-money-frontend .
+    ```
 
-To register a new user, send a POST request to the `/register` endpoint:
+2.  **Run the Frontend Docker Container:**
+    Start the frontend application in a Docker container, mapping port `3000` (or your desired port) and ensuring it can communicate with the backend:
+    ```bash
+    docker run -p 3000:3000 -e PORT=3000 -e REACT_APP_API_BASE_URL=http://localhost:8080 fi-money-frontend
+    ```
+    _Note: `REACT_APP_API_BASE_URL` should point to your backend service. If running both containers on the same Docker network, you might use a service name (e.g., `http://backend:8080`). For local testing, `http://localhost:8080` or `http://host.docker.internal:8080` (for Docker Desktop) can be used, ensuring your backend container is accessible from the frontend container._
 
-```powershell
-Invoke-WebRequest -Uri http://localhost:8080/register -Method POST -Headers @{"Content-Type"="application/json"} -Body '{"username":"newuser","password":"newpassword"}'
+### 5. Running and Testing with Docker Compose
+
+To bring up both the backend and frontend services simultaneously, navigate to the root directory of the project (where `docker-compose.yaml` is located) and run:
+
+```bash
+docker compose up --build
 ```
 
-(Expected: `StatusCode: 201 Created` with a `user_id`)
+This command will:
 
-**B. User Login (Existing or New User):**
+- Build the Docker images for both backend and frontend (if not already built or if changes are detected).
+- Start the PostgreSQL database service.
+- Start the backend service, linking it to the database.
+- Start the frontend service, configured to communicate with the backend.
 
-To log in and obtain an authentication token, send a POST request to the `/login` endpoint. This token is required for protected routes.
+Once the services are up and running, you can access the frontend application in your web browser at `http://localhost:3000`.
 
-```powershell
-# Get the access token (PowerShell)
-$accessToken = Invoke-WebRequest -Uri http://localhost:8080/login -Method POST -Headers @{"Content-Type"="application/json"} -Body '{"username":"newuser","password":"newpassword"}' | Select-Object -ExpandProperty Content | ConvertFrom-Json | Select-Object -ExpandProperty access_token
-Write-Host "Access Token: $($accessToken)"
+**To test the full application flow:**
+
+1.  **Register a new user:** Through the frontend UI, create a new user account.
+2.  **Log in:** Use the newly registered user's credentials (or an existing one) to log in via the frontend.
+3.  **Add a product:** From the product list page, add a new product.
+4.  **View products:** Verify that the product list updates and displays the newly added product.
+
+To stop and remove all services defined in `docker-compose.yaml` (including volumes for a clean slate, if desired):
+
+```bash
+docker compose down --volumes
 ```
-
-**C. View Products List:**
-
-To view the list of products, send a GET request to the `/products` endpoint with your authentication token:
-
-```powershell
-Invoke-WebRequest -Uri http://localhost:8080/products -Method GET -Headers @{"Authorization"="Bearer $($accessToken)"} | Select-Object -ExpandProperty Content | ConvertFrom-Json
-```
-
-(Expected: A list of product objects)
-
-**D. Add a New Product:**
-
-To add a new product, send a POST request to the `/products` endpoint with product details and your authentication token:
-
-```powershell
-Invoke-WebRequest -Uri http://localhost:8080/products -Method POST -Headers @{"Content-Type"="application/json"; "Authorization"="Bearer $($accessToken)"} -Body '{"name":"Sample Product","type":"Electronics","sku":"SAMPLE001","quantity":50,"price":29.99,"description":"A description of the sample product."}'
-```
-
-(Expected: `StatusCode: 201 Created` with a `product_id` and `message`)
 
 ---
 

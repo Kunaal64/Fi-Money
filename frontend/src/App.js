@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import Login from './Login';
-import Register from './Register';
-import ProductList from './ProductList';
+import Login from './Login.js';
+import Register from './Register.js';
+import ProductList from './ProductList.js';
 import './App.css';
 
 function App() {

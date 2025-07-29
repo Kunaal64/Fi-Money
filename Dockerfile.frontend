@@ -1,0 +1,22 @@
+FROM node:18-alpine AS build
+
+WORKDIR /app/frontend
+
+COPY frontend/package*.json ./
+RUN npm install
+
+COPY frontend ./
+RUN npm run build
+
+FROM node:18-alpine AS serve
+
+WORKDIR /app/frontend
+
+COPY --from=build /app/frontend/build ./build
+COPY --from=build /app/frontend/package.json .
+COPY frontend/server.js .
+RUN npm install --production
+
+EXPOSE ${PORT}
+
+CMD ["node", "server.js"] 

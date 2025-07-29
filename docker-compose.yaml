@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      PORT: 8080
+      DATABASE_URL: postgresql://user:password@db:5432/fimoney_db # Replace with your actual DB URL if different
+      JWT_SECRET: your_super_secure_jwt_secret_key # Replace with your actual JWT secret
+    depends_on:
+      - db
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "3001:3000"
+    environment:
+      PORT: 3000
+      REACT_APP_API_BASE_URL: http://backend:8080 # This will resolve to the backend service within the Docker network
+    depends_on:
+      - backend
+
+  db:
+    image: postgres:13-alpine
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: fimoney_db
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+volumes:
+  db_data: 
