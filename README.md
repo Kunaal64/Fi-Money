@@ -1,4 +1,4 @@
-# Inventory Control Hub
+# Fi - Money Assignment (Inventory)
 
 A modern, comprehensive system for managing product inventory, built with a robust Node.js (Express) backend, a dynamic React frontend, and a reliable PostgreSQL database.
 
@@ -28,6 +28,49 @@ Before launching the application, please ensure you have:
 - Git for repository cloning
 
 ## Installation & Setup Guide
+
+## Docker Deployment
+
+This project is containerized using Docker Compose for simplified deployment and environment consistency. The setup includes three services:
+- Frontend (React) - runs on port 3001
+- Backend (Node.js/Express) - runs on port 8080
+- Database (PostgreSQL) - runs internally on port 5432
+
+### Prerequisites
+- Docker
+- Docker Compose
+
+### Quick Start
+
+1. **Clone the repository** (if you haven't already):
+   ```bash
+   git clone <repository-url>
+   cd "Fi Money"
+   ```
+
+2. **Start the application with Docker Compose**:
+   ```bash
+   docker compose up -d
+   ```
+   This will:
+   - Build the frontend and backend Docker images
+   - Start the PostgreSQL database
+   - Start the backend service
+   - Start the frontend service
+
+3. **Access the application**:
+   - Frontend: http://localhost:3001
+   - Backend API: http://localhost:8080
+   - Database: PostgreSQL running in a container (port 5432 internally)
+
+### Stopping the Application
+To stop all services:
+```bash
+docker compose down
+```
+
+### Environment Variables
+All necessary environment variables are already configured in the `docker-compose.yaml` file. You can modify them there if needed.
 
 ### 1. Obtain the Source Code
 
@@ -85,106 +128,12 @@ cd "Fi Money" # Move into the project root
     ```
     The React application should open in your browser, usually at `http://localhost:3000`.
 
-## Docker Deployment
-
-This project is containerized using Docker Compose for simplified deployment and environment consistency. The setup includes three services:
-- Frontend (React) - runs on port 3001
-- Backend (Node.js/Express) - runs on port 8080
-- Database (PostgreSQL) - runs internally on port 5432
-
-### Prerequisites
-- Docker
-- Docker Compose
-
-### Quick Start
-
-1. **Clone the repository** (if you haven't already):
-   ```bash
-   git clone <repository-url>
-   cd "Fi Money"
-   ```
-
-2. **Start the application with Docker Compose**:
-   ```bash
-   docker compose up -d
-   ```
-   This will:
-   - Build the frontend and backend Docker images
-   - Start the PostgreSQL database
-   - Start the backend service
-   - Start the frontend service
-
-3. **Access the application**:
-   - Frontend: http://localhost:3001
-   - Backend API: http://localhost:8080
-   - Database: PostgreSQL running in a container (port 5432 internally)
-
-### Stopping the Application
-To stop all services:
-```bash
-docker compose down
-```
-
-### Environment Variables
-All necessary environment variables are already configured in the `docker-compose.yaml` file. You can modify them there if needed.
-
-### Development with Docker
-For development, you might want to mount your local source code into the containers. The current setup uses the built images, but you can modify the `docker-compose.yaml` file to mount your local directories for live reloading during development.
-
-2.  **Run the Backend Docker Container:**
-    Start the backend application in a Docker container, mapping port `8080` (or your desired port) and setting the `PORT` environment variable:
-    ```bash
-    docker run -p 8080:8080 -e PORT=8080 fi-money-backend
-    ```
-    (You can replace `8080:8080` with `YOUR_HOST_PORT:8080` to map to a different port on your host machine.)
-
-#### Frontend Dockerization
-
-1.  **Build the Frontend Docker Image:**
-    Navigate to the root directory of the project and run:
-
-    ```bash
-    docker build -f Dockerfile.frontend -t fi-money-frontend .
-    ```
-
-2.  **Run the Frontend Docker Container:**
-    Start the frontend application in a Docker container, mapping port `3000` (or your desired port) and ensuring it can communicate with the backend:
-    ```bash
-    docker run -p 3000:3000 -e PORT=3000 -e REACT_APP_API_BASE_URL=http://localhost:8080 fi-money-frontend
-    ```
-    _Note: `REACT_APP_API_BASE_URL` should point to your backend service. If running both containers on the same Docker network, you might use a service name (e.g., `http://backend:8080`). For local testing, `http://localhost:8080` or `http://host.docker.internal:8080` (for Docker Desktop) can be used, ensuring your backend container is accessible from the frontend container._
-
-### 5. Running and Testing with Docker Compose
-
-To bring up both the backend and frontend services simultaneously, navigate to the root directory of the project (where `docker-compose.yaml` is located) and run:
-
-```bash
-docker compose up --build
-```
-
-This command will:
-
-- Build the Docker images for both backend and frontend (if not already built or if changes are detected).
-- Start the PostgreSQL database service.
-- Start the backend service, linking it to the database.
-- Start the frontend service, configured to communicate with the backend.
-
-Once the services are up and running, you can access the frontend application in your web browser at `http://localhost:3000`.
-
 **To test the full application flow:**
 
 1.  **Register a new user:** Through the frontend UI, create a new user account.
 2.  **Log in:** Use the newly registered user's credentials (or an existing one) to log in via the frontend.
 3.  **Add a product:** From the product list page, add a new product.
 4.  **View products:** Verify that the product list updates and displays the newly added product.
-
-To stop and remove all services defined in `docker-compose.yaml` (including volumes for a clean slate, if desired):
-
-```bash
-docker compose down --volumes
-```
-
----
 
 ## Database Schema Overview
 
@@ -309,8 +258,3 @@ Potential areas for evolving this project include:
 - **Centralized Logging & Monitoring:** Establishing a robust logging infrastructure to monitor application behavior, track errors, and streamline debugging in production environments.
 - **Advanced Frontend State Management:** For growing application complexity, consider adopting a dedicated state management library (e.g., Redux, Zustand) for more predictable and maintainable frontend state.
 
----
-
-## Licensing Information
-
-MIT
