@@ -64,7 +64,7 @@ The application comes with the following pre-configured users:
 | user1    | password   | 
 | user2    | password   | 
 
-> **Note**: These are default credentials. Please change the passwords after your first login for security.
+> **Note**: These are default credentials.
 
 ### Option 2: Manual Setup
 
