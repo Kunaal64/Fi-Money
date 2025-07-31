@@ -1,362 +1,160 @@
-# Fi - Money Assignment (Inventory)
+# Fi-Money Inventory System
 
-A modern, comprehensive system for managing product inventory, built with a robust Node.js (Express) backend, a dynamic React frontend, and a reliable PostgreSQL database.
+A simple inventory management system with React frontend, Node.js/Express backend, and PostgreSQL database.
 
-# 🚀 Fi-Money - Inventory Management System
+## Tech Stack
 
-Fi-Money is a modern, containerized inventory management system built with Node.js, React, and PostgreSQL. It provides an intuitive interface for managing products, tracking inventory, and generating reports.
+- **Frontend**: React.js, HTML/CSS, Axios
+- **Backend**: Node.js, Express.js, JWT
+- **Database**: PostgreSQL
+- **Containerization**: Docker, Docker Compose
+- **API Documentation**: Swagger/OpenAPI
 
-## 🛠️ Prerequisites
+## Features
 
-Before you begin, ensure you have the following installed:
+- User authentication (Register/Login)
+- Product management (CRUD operations)
+- Real-time inventory tracking
+- Responsive web interface
+- Secure API with JWT authentication
+- Interactive API documentation
 
-- [Docker](https://docs.docker.com/get-docker/)
-- [Docker Compose](https://docs.docker.com/compose/install/)
-- [Git](https://git-scm.com/downloads)
+## Prerequisites
 
-## 🚀 Quick Start
+- Docker and Docker Compose (for containerized setup)
+- Node.js 16+ and npm (for manual setup)
+- PostgreSQL 12+ (for manual setup)
+- Git
 
-### 1. Clone the Repository
+## Quick Start
 
-```bash
-git clone https://github.com/yourusername/Fi-Money.git
-cd Fi-Money
-```
+### Option 1: Using Docker (Recommended)
 
-### 2. Run the Setup Script
-
-Simply run the setup script and follow the on-screen instructions:
-
-```bash
-setup-simple.bat
-```
-
-The script will:
-- Verify system requirements
-- Set up the environment
-- Build and start all services
-- Initialize the database
-- Show you how to access the application
-
-## 🌐 Application Access
-
-Once the setup is complete, you can access:
-
-- **Frontend (Web Interface)**: http://localhost:3001
-- **Backend API**: http://localhost:8080
-- **API Documentation**: http://localhost:8080/api-docs
-
-## 🛠️ Managing the Application
-
-### View Logs
-```bash
-docker-compose logs -f
-```
-
-### Stop the Application
-```bash
-docker-compose down
-```
-
-### Restart the Application
-```bash
-docker-compose restart
-```
-
-### View Running Containers
-```bash
-docker-compose ps
-```
-
-## 🏁 Getting Started
-
-1. Open http://localhost:3001 in your web browser
-2. Register a new account
-3. Start adding products and managing your inventory
-
-## 🔍 Troubleshooting
-
-### Common Issues
-
-1. **Application won't start**
-   - Check if Docker is running
-   - Verify all containers are up: `docker-compose ps`
-   - View detailed logs: `docker-compose logs`
-
-2. **Database connection issues**
-   - Make sure the database container is running
-   - Check the `.env` file for correct database credentials
-
-3. **Reset everything**
+1. Clone the repository:
    ```bash
-   docker-compose down -v
-   setup-simple.bat
+   git clone https://github.com/yourusername/Fi-Money.git
+   cd Fi-Money
    ```
 
-## 📚 Documentation
+2. Run the setup script:
 
-For detailed documentation, please refer to:
-- [API Documentation](http://localhost:8080/api-docs)
-- [Frontend Documentation](./frontend/README.md)
-- [Backend Documentation](./backend/README.md)
-
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Core System Capabilities
-
-- **User Authentication:** Secure JWT-based access control with bcrypt for password hashing.
-- **Product Lifecycle Management:** Full CRUD operations for all inventory items, including stock tracking.
-- **Analytics Overview:** Basic insights into product popularity by tracking additions, data persistently stored in PostgreSQL.
-- **Intuitive User Interface:** A contemporary and user-friendly design focused on clarity and ease of navigation.
-- **API Guide:** Comprehensive OpenAPI/Swagger documentation detailing all backend endpoints.
-- **Secure Configuration:** Sensitive environment variables managed safely.
-
-## Technology Stack
-
-- **Client-Side:** React.js (JavaScript, CSS)
-- **Server-Side:** Node.js, Express.js
-- **Database Engine:** PostgreSQL
-- **Security & Identity:** JWT, bcrypt
-- **Package Management:** npm
-
-## Prerequisites Checklist
-
-Before launching the application, please ensure you have:
-
-- Node.js (version 16+ strongly advised)
-- An operational PostgreSQL database instance
-- Git for repository cloning
-
-## Installation & Setup Guide
-
-## Docker Deployment
-
-This project is containerized using Docker Compose for simplified deployment and environment consistency. The setup includes three services:
-- Frontend (React) - runs on port 3001
-- Backend (Node.js/Express) - runs on port 8080
-- Database (PostgreSQL) - runs internally on port 5432
-
-### Prerequisites
-- Docker
-- Docker Compose
-
-### Quick Start
-
-1. **Clone the repository** (if you haven't already):
+   **Windows:**
    ```bash
-   git clone <repository-url>
-   cd "Fi Money"
+   .\setup-simple.bat
    ```
 
-2. **Start the application with Docker Compose**:
+   **Linux/macOS:**
    ```bash
-   docker compose up -d
+   chmod +x setup.sh
+   ./setup.sh
    ```
-   This will:
-   - Build the frontend and backend Docker images
-   - Start the PostgreSQL database
-   - Start the backend service
-   - Start the frontend service
 
-3. **Access the application**:
+3. Access the application:
    - Frontend: http://localhost:3001
-   - Backend API: http://localhost:8080
-   - Database: PostgreSQL running in a container (port 5432 internally)
+   - API: http://localhost:8080
+   - API Docs: http://localhost:8080/api-docs
 
-### Stopping the Application
-To stop all services:
-```bash
-docker compose down
+### Option 2: Manual Setup
+
+1. **Backend Setup**
+   ```bash
+   cd backend
+   npm install
+   cp .env.example .env
+   # Update .env with your database credentials
+   npm run migrate
+   npm start
+   ```
+
+2. **Frontend Setup**
+   ```bash
+   cd frontend
+   npm install
+   cp .env.example .env
+   # Update API URL in .env if needed
+   npm start
+   ```
+
+## Project Structure
+
+```
+Fi-Money/
+├── backend/                 # Node.js/Express API
+│   ├── src/
+│   │   ├── controllers/    # Request handlers
+│   │   ├── middleware/     # Authentication & validation
+│   │   ├── models/         # Database models
+│   │   ├── routes/         # API routes
+│   │   ├── utils/          # Helper functions
+│   │   └── app.js          # Express app setup
+│   ├── .env.example        # Environment variables template
+│   ├── package.json        # Backend dependencies
+│   └── db/                 # Database migrations/seeds
+│
+├── frontend/               # React application
+│   ├── public/             # Static files
+│   ├── src/
+│   │   ├── components/     # Reusable UI components
+│   │   ├── pages/          # Page components
+│   │   ├── services/       # API service layer
+│   │   ├── App.js          # Main app component
+│   │   └── index.js        # Entry point
+│   ├── .env.example        # Frontend env template
+│   └── package.json        # Frontend dependencies
+│
+├── docker/                 # Docker configuration
+├── .gitignore             # Git ignore rules
+├── docker-compose.yml     # Docker compose config
+├── setup.sh              # Linux/macOS setup script
+└── setup-simple.bat      # Windows setup script
 ```
 
-### Environment Variables
-All necessary environment variables are already configured in the `docker-compose.yaml` file. You can modify them there if needed.
+## API Endpoints
 
-### 1. Obtain the Source Code
+### Authentication
+- `POST /register` - Register new user
+- `POST /login` - User login
 
-```bash
-git clone <repository-url>
-cd "Fi Money" # Move into the project root
-```
-
-### 2. Backend Environment Configuration
-
-1.  **Change directory:**
-    ```bash
-    cd backend
-    ```
-2.  **Install server dependencies:**
-    ```bash
-    npm install
-    ```
-3.  **Set up Environment Variables:**
-    Create a `.env` file in the `backend/` directory (you can copy `.env.example`).
-    ```env
-    DATABASE_URL=postgresql://<username>:<password>@<host>:<port>/<database>?sslmode=require
-    JWT_SECRET=your_super_secure_jwt_secret_key
-    PORT=8080
-    ```
-    _Important:_ Replace `DATABASE_URL` with your specific PostgreSQL connection string. Ensure `JWT_SECRET` is a strong, unique value.
-4.  **Initialize Database Schema:**
-    **Warning:** This operation will clear and re-create your `users` and `products` tables. Backup any crucial data if this isn't a fresh setup.
-    ```bash
-    npm run init-db
-    ```
-    This action ensures the `products` table includes the `times_added` column for analytics.
-5.  **Start the Backend Service:**
-    ```bash
-    npm start
-    # Alternatively:
-    node src/app.js
-    ```
-    The backend API will become available at `http://localhost:8080`.
-
-### 3. Frontend Environment Configuration
-
-1.  **Change directory:**
-    (From the project root, navigate back into `frontend`)
-    ```bash
-    cd frontend
-    ```
-2.  **Install client dependencies:**
-    ```bash
-    npm install
-    ```
-3.  **Launch Frontend Server:**
-    ```bash
-    npm start
-    ```
-    The React application should open in your browser, usually at `http://localhost:3000`.
-
-**To test the full application flow:**
-
-1.  **Register a new user:** Through the frontend UI, create a new user account.
-2.  **Log in:** Use the newly registered user's credentials (or an existing one) to log in via the frontend.
-3.  **Add a product:** From the product list page, add a new product.
-4.  **View products:** Verify that the product list updates and displays the newly added product.
-
-## Database Schema Overview
-
-Our application is structured around these key PostgreSQL tables:
-
-### Users (Authentication)
-
-- `id` (Primary Key, Auto-increment)
-- `username` (Unique, Not Null)
-- `password_hash` (Stores bcrypt hashed passwords, Not Null)
-
-### Products (Inventory Items)
-
-- `id` (Primary Key, Auto-increment)
-- `name` (Not Null)
-- `type` (Not Null)
-- `sku` (Unique identifier, Not Null)
-- `image_url` (Optional)
-- `description` (Optional)
-- `quantity` (Integer, Not Null)
-- `price` (Numeric(10,2), Not Null)
-- `times_added` (Integer, Default 0; for analytics on product additions)
-
----
+### Products
+- `GET /products` - List all products
+- `GET /products/:id` - Get single product
+- `POST /products` - Create new product
+- `PUT /products/:id` - Update product
+- `DELETE /products/:id` - Delete product
+- `PUT /products/:id/quantity` - Update product quantity
 
 ## Available Commands
 
-These commands are executed from within their respective `backend/` or `frontend/` directories.
+### Docker Commands
+- Start services: `docker-compose up -d`
+- Stop services: `docker-compose down`
+- View logs: `docker-compose logs -f`
+- Check containers: `docker-compose ps`
 
-| Command           | Location    | Purpose                                       |
-| :---------------- | :---------- | :-------------------------------------------- |
-| `npm install`     | `backend/`  | Installs server-side project dependencies     |
-| `npm start`       | `backend/`  | Initiates the Node.js API server              |
-| `npm run init-db` | `backend/`  | Initializes or resets the PostgreSQL database |
-| `npm install`     | `frontend/` | Installs client-side project dependencies     |
-| `npm start`       | `frontend/` | Launches the React development server         |
+### Development Commands
+- Install dependencies: `npm install` (in both frontend/backend)
+- Start development server: `npm start`
+- Run tests: `npm test`
 
----
+## Troubleshooting
 
-## API Endpoint Reference
+1. **Docker not running**
+   - Start Docker Desktop or Docker service
+   - Run `docker ps` to verify
 
-All API services are available at `http://localhost:8080`. For comprehensive details on request/response formats, parameters, and authentication, please consult the `API_DOCUMENTATION.md` file.
+2. **Port conflicts**
+   - Check if ports 3001 (frontend) or 8080 (backend) are in use
+   - Update ports in `docker-compose.yml` if needed
 
-### Identity & Security Endpoints
+3. **Database connection issues**
+   - Verify database credentials in `.env`
+   - Ensure database service is running
 
-- **POST** `/register` - New user account creation
-- **POST** `/login` - User authentication and JWT issuance
+4. **Reset everything**
+   ```bash
+   docker-compose down -v
+   # Then run the setup script again
+   ```
 
-### Inventory Operations Endpoints
 
-- **POST** `/products` - Add a new product (or increment count if SKU exists)
-- **GET** `/products` - Retrieve list of products (with pagination)
-- **PUT** `/products/{id}/quantity` - Update specific product quantity
-- **DELETE** `/products/{id}` - Remove a product
-
-### Analytics & Data Insights
-
-- **GET** `/products/analytics/most-added` - Fetch data on most frequently added products
-
----
-
-## Authentication Process Details
-
-1.  **Account Creation:** Users register via the `/register` endpoint.
-2.  **Token Acquisition:** A successful login (`POST` to `/login`) provides a JWT, crucial for authenticated requests.
-3.  **Authorized Requests:** This JWT must be included in the `Authorization` header (`Bearer <token>`) for all protected API calls.
-4.  **Token Validity:** JWTs are valid for 24 hours; re-login is necessary upon expiration.
-
----
-
-## Project Directory Structure
-
-```
-Fi Money/
-├── backend/                 # Node.js/Express API (server-side logic)
-│   ├── db_init.sql          # Database schema definition
-│   ├── init-db.js           # Script for database setup
-│   ├── src/                 # Backend application source code
-│   │   ├── app.js           # Main Express application
-│   │   ├── controllers/     # API request handlers
-│   │   ├── middleware/      # Authentication & other middleware
-│   │   ├── models/          # Database interaction layer
-│   │   ├── routes/          # API endpoint routing
-│   │   └── utils/           # General utility functions
-│   └── swagger.yaml         # OpenAPI specification file
-├── frontend/                # React Application (client-side UI)
-│   ├── public/              # Static web assets
-│   ├── src/                 # Frontend source code
-│   │   ├── App.js           # Primary application component & routing
-│   │   ├── App.css          # Global and component styling
-│   │   ├── Login.js         # User login interface
-│   │   ├── Register.js      # User registration interface
-│   │   └── ProductList.js   # Product display and management UI
-│   └── package.json         # Frontend dependencies & scripts
-├── README.md                # Comprehensive project documentation (this file)
-├── API_DOCUMENTATION.md     # Detailed API endpoint reference
-└── package.json             # Root-level package manager config (if applicable)
-```
-
----
-
-## Security Implementation
-
-- **Password Safeguarding:** User passwords are encrypted using bcrypt before being stored, significantly enhancing security.
-- **JWT Access Control:** Critical API routes are meticulously protected with JWTs, ensuring only validated and authorized users can interact with them.
-- **Input Integrity Validation:** A robust validation system actively scrutinizes all incoming data for API requests, preventing malformed inputs and thwarting potential injection vulnerabilities.
-- **Environmental Isolation:** Sensitive configuration data, such as database credentials and cryptographic keys, are strictly segregated via environment variables, eliminating their exposure in the source code.
-
----
-
-## Future Enhancements & Expansion Ideas
-
-Potential areas for evolving this project include:
-
-- **Advanced Reporting Modules:** Developing more sophisticated analytics, such as identifying least-performing products, revenue breakdown by product type, or trend analysis for sales over time.
-- **Role-Based Access Control (RBAC):** Implementing distinct user roles with fine-grained permissions (e.g., read-only users, inventory managers, administrators).
-- **Dynamic Search & Filtering:** Introducing powerful search capabilities and flexible filtering options for the product catalog to enhance data discovery and user experience.
-- **Optimized Product Listing:** Implementing server-side pagination for the product display to ensure efficient handling and faster loading times for very large datasets.
-- **Integrated Image Uploads:** Developing functionality for direct image uploads to a cloud storage service (e.g., AWS S3, Cloudinary), moving beyond URL-based inputs.
-- **Real-time Interactions:** Leveraging WebSocket technology to enable instant updates across all connected client applications for inventory changes or new product additions.
-- **Thorough Testing Suites:** Expanding comprehensive unit, integration, and end-to-end tests for both frontend and backend to guarantee high reliability, stability, and bug prevention.
-- **Centralized Logging & Monitoring:** Establishing a robust logging infrastructure to monitor application behavior, track errors, and streamline debugging in production environments.
-- **Advanced Frontend State Management:** For growing application complexity, consider adopting a dedicated state management library (e.g., Redux, Zustand) for more predictable and maintainable frontend state.
 
