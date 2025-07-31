@@ -2,6 +2,108 @@
 
 A modern, comprehensive system for managing product inventory, built with a robust Node.js (Express) backend, a dynamic React frontend, and a reliable PostgreSQL database.
 
+# 🚀 Fi-Money - Inventory Management System
+
+Fi-Money is a modern, containerized inventory management system built with Node.js, React, and PostgreSQL. It provides an intuitive interface for managing products, tracking inventory, and generating reports.
+
+## 🛠️ Prerequisites
+
+Before you begin, ensure you have the following installed:
+
+- [Docker](https://docs.docker.com/get-docker/)
+- [Docker Compose](https://docs.docker.com/compose/install/)
+- [Git](https://git-scm.com/downloads)
+
+## 🚀 Quick Start
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/yourusername/Fi-Money.git
+cd Fi-Money
+```
+
+### 2. Run the Setup Script
+
+Simply run the setup script and follow the on-screen instructions:
+
+```bash
+setup-simple.bat
+```
+
+The script will:
+- Verify system requirements
+- Set up the environment
+- Build and start all services
+- Initialize the database
+- Show you how to access the application
+
+## 🌐 Application Access
+
+Once the setup is complete, you can access:
+
+- **Frontend (Web Interface)**: http://localhost:3001
+- **Backend API**: http://localhost:8080
+- **API Documentation**: http://localhost:8080/api-docs
+
+## 🛠️ Managing the Application
+
+### View Logs
+```bash
+docker-compose logs -f
+```
+
+### Stop the Application
+```bash
+docker-compose down
+```
+
+### Restart the Application
+```bash
+docker-compose restart
+```
+
+### View Running Containers
+```bash
+docker-compose ps
+```
+
+## 🏁 Getting Started
+
+1. Open http://localhost:3001 in your web browser
+2. Register a new account
+3. Start adding products and managing your inventory
+
+## 🔍 Troubleshooting
+
+### Common Issues
+
+1. **Application won't start**
+   - Check if Docker is running
+   - Verify all containers are up: `docker-compose ps`
+   - View detailed logs: `docker-compose logs`
+
+2. **Database connection issues**
+   - Make sure the database container is running
+   - Check the `.env` file for correct database credentials
+
+3. **Reset everything**
+   ```bash
+   docker-compose down -v
+   setup-simple.bat
+   ```
+
+## 📚 Documentation
+
+For detailed documentation, please refer to:
+- [API Documentation](http://localhost:8080/api-docs)
+- [Frontend Documentation](./frontend/README.md)
+- [Backend Documentation](./backend/README.md)
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
 ## Core System Capabilities
 
 - **User Authentication:** Secure JWT-based access control with bcrypt for password hashing.

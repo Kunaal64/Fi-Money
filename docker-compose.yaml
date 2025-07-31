@@ -9,10 +9,11 @@ services:
       - "8080:8080"
     environment:
       PORT: 8080
-      DATABASE_URL: postgresql://user:password@db:5432/fimoney_db # Replace with your actual DB URL if different
+      DATABASE_URL: postgresql://user:password@db:5432/fimoney_db?sslmode=disable
       JWT_SECRET: your_super_secure_jwt_secret_key # Replace with your actual JWT secret
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
   frontend:
     build:
@@ -32,8 +33,16 @@ services:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
       POSTGRES_DB: fimoney_db
+    ports:
+      - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
+      - ./backend/db_init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d fimoney_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
 volumes:
   db_data: 
