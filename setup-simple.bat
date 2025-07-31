@@ -92,44 +92,18 @@ if %ERRORLEVEL% neq 0 (
 
 echo.
 echo ========================================
-echo    SETUP COMPLETED SUCCESSFULLY
+echo    Setup Completed Successfully!
 echo ========================================
 echo.
-
-echo 1. APPLICATION ACCESS
-echo    ----------------------------
-echo    Frontend (Web Interface):
-echo    http://localhost:3001
-   API Docs: http://localhost:8080/api-docs
+echo Access the dashboard: http://localhost:3001
+echo For more information, please refer to the README.md file
+echo To stop the application, run: docker-compose down
+echo.
 
 echo.
-echo 2. GETTING STARTED
-   ----------------------------
-   - Open http://localhost:3001 in your browser
-   - Register a new account
-   - Start managing your inventory!
-
+echo [*] Setup completed successfully!
 echo.
-echo 3. MANAGEMENT COMMANDS
-   ----------------------------
-   View logs:         docker-compose logs -f
-   Stop application:  docker-compose down
-   Restart:           docker-compose restart
-   View containers:   docker-compose ps
-
-echo.
-echo 4. TROUBLESHOOTING
-   ----------------------------
-   If the application doesn't load:
-   - Check if containers are running: docker-compose ps
-   - View logs: docker-compose logs
-   - Reset everything: docker-compose down -v && setup-simple.bat
-
-echo.
-echo ========================================
-echo [*] Starting application logs (Ctrl+C to exit):
-echo ========================================
-
-docker-compose logs -f --tail=20
+echo To view logs, run: docker-compose logs -f
+echo To stop the application, run: docker-compose down
 
 pause

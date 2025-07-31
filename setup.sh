@@ -100,10 +100,16 @@ if [[ ! $REPLY =~ ^[Nn]$ ]]; then
 
     # Check if the command was successful
     if [ $? -eq 0 ]; then
-        echo -e "\n${GREEN}[SUCCESS]${NC} Application is starting up!"
-        echo -e "\n🌐 Access the application at: ${GREEN}http://localhost:3001${NC}"
-        echo -e "📚 API Documentation: ${GREEN}http://localhost:8080/api-docs${NC}"
-        echo -e "\nYou can view the logs with: ${YELLOW}$DOCKER_COMPOSE_CMD logs -f${NC}"
+        echo -e "\n${GREEN}========================================${NC}"
+        echo -e "    ${GREEN}Setup Completed Successfully!${NC}"
+        echo -e "${GREEN}========================================${NC}\n"
+        echo -e "Access the dashboard: ${GREEN}http://localhost:3001${NC}"
+        echo -e "For more information, please refer to the README.md file\n"
+        echo -e "${YELLOW}Management Commands:${NC}"
+        echo -e "  View logs:         $DOCKER_COMPOSE_CMD logs -f"
+        echo -e "  Stop application:  $DOCKER_COMPOSE_CMD down"
+        echo -e "  View containers:   $DOCKER_COMPOSE_CMD ps\n"
+        echo -e "${GREEN}The application is now running in the background.${NC}"
     else
         echo -e "\n${RED}[ERROR]${NC} Failed to start the application. Check the logs for more details."
         exit 1
