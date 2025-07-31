@@ -36,25 +36,19 @@ echo.
 echo [*] Stopping any running containers...
 docker-compose down >nul 2>&1
 
-:: Create .env file if it doesn't exist
-if not exist .env (
-    echo [*] Creating .env file...
-    (
-        echo # Backend
-        echo PORT=8080
-        echo DATABASE_URL=postgresql://user:password@db:5432/fimoney_db?sslmode=disable
-        echo JWT_SECRET=your_secure_jwt_secret_key_change_this_in_production
-        echo.
-        echo # Frontend
-        echo REACT_APP_API_BASE_URL=http://localhost:8080
-    ) > .env
-    echo [OK] .env file created
-) else (
-    echo [*] Using existing .env file
-)
-
-echo.
-echo [*] Building and starting containers (this may take a few minutes)...
+:: Create or update .env file with valid values
+echo [*] Configuring environment variables...
+(
+    echo # Backend
+    echo PORT=8080
+    echo DATABASE_URL=postgresql://user:password@db:5432/fimoney_db?sslmode=disable
+    echo # This JWT_SECRET must match the one used in db_init.sql for the seeded users
+    echo JWT_SECRET=92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi
+    echo.
+    echo # Frontend
+    echo REACT_APP_API_BASE_URL=http://localhost:8080
+) > .env
+echo [OK] Environment variables configured (this may take a few minutes)...
 docker-compose up -d --build
 
 if %ERRORLEVEL% neq 0 (
@@ -75,42 +69,21 @@ if %ERRORLEVEL% neq 0 (
 echo.
 
 echo [*] Initializing database with sample data...
-(
-    echo CREATE TABLE IF NOT EXISTS users (
-    echo     id SERIAL PRIMARY KEY,
-    echo     username VARCHAR(50) UNIQUE NOT NULL,
-    echo     email VARCHAR(100) UNIQUE NOT NULL,
-    echo     password_hash VARCHAR(255) NOT NULL,
-    echo     role VARCHAR(20) DEFAULT 'user',
-    echo     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    echo );
-    echo.
-    echo CREATE TABLE IF NOT EXISTS products (
-    echo     id SERIAL PRIMARY KEY,
-    echo     name VARCHAR(100) NOT NULL,
-    echo     description TEXT,
-    echo     price DECIMAL(10, 2) NOT NULL,
-    echo     quantity INTEGER NOT NULL,
-    echo     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    echo );
-    echo.
-    echo -- Insert sample admin user (password: admin123)
-    echo INSERT INTO users (username, email, password_hash, role) VALUES (
-    echo     'admin',
-    echo     'admin@example.com',
-    echo     '$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
-    echo     'admin'
-    echo ) ON CONFLICT (username) DO NOTHING;
-    echo.
-    echo -- Insert sample products
-    echo INSERT INTO products (name, description, price, quantity) VALUES
-    echo     ('Laptop', 'High-performance laptop with 16GB RAM', 1200.00, 15),
-    echo     ('Smartphone', 'Latest smartphone with 128GB storage', 800.00, 30),
-    echo     ('Headphones', 'Wireless noise-canceling headphones', 250.00, 50)
-    echo ON CONFLICT (name) DO NOTHING;
-) > .\backend\init-db.sql
 
-docker-compose exec -T db psql -U user -d fimoney_db -f /app/backend/init-db.sql >nul 2>&1
+:: Copy the db_init.sql file to the container
+docker cp .\backend\db_init.sql fi-money-db-1:/docker-entrypoint-initdb.d/
+
+:: Wait for PostgreSQL to be ready
+echo [*] Waiting for PostgreSQL to be ready...
+:wait_for_db
+    docker-compose exec -T db pg_isready -U user -d fimoney_db >nul 2>&1
+    if %ERRORLEVEL% neq 0 (
+        timeout /t 2 >nul
+        goto wait_for_db
+    )
+
+:: Execute the initialization script
+docker-compose exec -T db psql -U user -d fimoney_db -f /docker-entrypoint-initdb.d/db_init.sql >nul 2>&1
 if %ERRORLEVEL% neq 0 (
     echo [WARNING] Failed to initialize database with sample data.
 ) else (

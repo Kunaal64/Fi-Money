@@ -49,22 +49,19 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     $DOCKER_COMPOSE_CMD down
 fi
 
-# Create .env file if it doesn't exist
-if [ ! -f .env ]; then
-    echo "[*] Creating .env file..."
-    cat > .env <<EOL
+# Create or update .env file with valid values
+echo "[*] Configuring environment variables..."
+cat > .env <<EOL
 # Backend
 PORT=8080
 DATABASE_URL=postgresql://user:password@db:5432/fimoney_db?sslmode=disable
-JWT_SECRET=your_secure_jwt_secret_key_change_this_in_production
+# This JWT_SECRET must match the one used in db_init.sql for the seeded users
+JWT_SECRET=92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi
 
 # Frontend
 REACT_APP_API_BASE_URL=http://localhost:8080
 EOL
-    echo -e "${GREEN}[OK]${NC} Created .env file"
-else
-    echo -e "${YELLOW}[INFO]${NC} .env file already exists, skipping creation"
-fi
+echo "[OK] Environment variables configured"
 
 # Build and start the application
 echo
@@ -74,6 +71,33 @@ if [[ ! $REPLY =~ ^[Nn]$ ]]; then
     echo "[*] Building and starting the application..."
     $DOCKER_COMPOSE_CMD up --build -d
     
+    # Wait for PostgreSQL to be ready
+    echo -n "[*] Waiting for PostgreSQL to be ready..."
+    until $DOCKER_COMPOSE_CMD exec -T db pg_isready -U user -d fimoney_db >/dev/null 2>&1; do
+        echo -n "."
+        sleep 1
+    done
+    echo -e "\n${GREEN}[OK]${NC} PostgreSQL is ready"
+
+    # Copy the db_init.sql file to the container
+    echo -n "[*] Copying database initialization script..."
+    $DOCKER_COMPOSE_CMD cp ./backend/db_init.sql db:/docker-entrypoint-initdb.d/
+    if [ $? -eq 0 ]; then
+        echo -e " ${GREEN}[OK]${NC} Initialization script copied"
+    else
+        echo -e " ${RED}[ERROR]${NC} Failed to copy initialization script"
+        exit 1
+    fi
+
+    # Execute the initialization script
+    echo -n "[*] Initializing database with sample data..."
+    $DOCKER_COMPOSE_CMD exec -T db psql -U user -d fimoney_db -f /docker-entrypoint-initdb.d/db_init.sql >/dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        echo -e " ${GREEN}[OK]${NC} Database initialized with sample data"
+    else
+        echo -e " ${YELLOW}[WARNING]${NC} Database initialization completed with warnings"
+    fi
+
     # Check if the command was successful
     if [ $? -eq 0 ]; then
         echo -e "\n${GREEN}[SUCCESS]${NC} Application is starting up!"

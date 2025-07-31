@@ -54,6 +54,18 @@ A simple inventory management system with React frontend, Node.js/Express backen
    - API: http://localhost:8080
    - API Docs: http://localhost:8080/api-docs
 
+## Default Users
+
+The application comes with the following pre-configured users:
+
+| Username | Password   |
+|----------|------------|
+| admin    | password   | 
+| user1    | password   | 
+| user2    | password   | 
+
+> **Note**: These are default credentials. Please change the passwords after your first login for security.
+
 ### Option 2: Manual Setup
 
 1. **Backend Setup**
